@@ -24,19 +24,20 @@ int main(int argc, char** argv)
 {
 	//extract features of training images
 	ifstream trainingis;
-	trainingis.open("test.txt", ios::in);
+	trainingis.open("image_list.txt", ios::in);
 	ofstream trainingos;
-	trainingos.open("testfeature.txt", ios::out | ios::app);
-	string imagepre = "test/";
+	trainingos.open("feature.txt", ios::out | ios::app);
+	string imagepre = "image/";
 	string imagename;
 	char label[20];
+	trainingos << FEATURE_DIM << endl;
 	while (!trainingis.eof())
 	{
 		trainingis >> imagename;
 		IplImage * src = cvLoadImage((imagepre+imagename).c_str());
 		getLabel(imagename, label);
 		vector<int> feature = ColorFeature::getFeature(src);
-		trainingos << label << " ";
+		trainingos << imagename << " " << label << " ";
 		for (int i = 0; i < 9; i++)
 		{
 			trainingos << feature[i] << " ";
