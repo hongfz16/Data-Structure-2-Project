@@ -1,0 +1,209 @@
+Range: 20
+==========================
+Dimension: 2
+Object number: 1000
+Average Disk Time: 57.4686
+Average Accuracy: 0.140207
+Average Recall: 0.0421948
+Dimension: 2
+Object number: 2000
+Average Disk Time: 105.739
+Average Accuracy: 0.140826
+Average Recall: 0.082097
+Dimension: 2
+Object number: 3000
+Average Disk Time: 154.575
+Average Accuracy: 0.14431
+Average Recall: 0.126767
+Dimension: 2
+Object number: 4000
+Average Disk Time: 193.092
+Average Accuracy: 0.142027
+Average Recall: 0.16023
+Dimension: 2
+Object number: 5000
+Average Disk Time: 247.929
+Average Accuracy: 0.140246
+Average Recall: 0.208374
+==========================
+Dimension: 3
+Object number: 1000
+Average Disk Time: 44.2864
+Average Accuracy: 0.172824
+Average Recall: 0.0238693
+Dimension: 3
+Object number: 2000
+Average Disk Time: 83.109
+Average Accuracy: 0.167985
+Average Recall: 0.0481637
+Dimension: 3
+Object number: 3000
+Average Disk Time: 118.372
+Average Accuracy: 0.175617
+Average Recall: 0.0757521
+Dimension: 3
+Object number: 4000
+Average Disk Time: 154.389
+Average Accuracy: 0.173757
+Average Recall: 0.0997685
+Dimension: 3
+Object number: 5000
+Average Disk Time: 178.196
+Average Accuracy: 0.172487
+Average Recall: 0.124752
+==========================
+Dimension: 4
+Object number: 1000
+Average Disk Time: 47.209
+Average Accuracy: 0.179663
+Average Recall: 0.0182425
+Dimension: 4
+Object number: 2000
+Average Disk Time: 86.6526
+Average Accuracy: 0.1873
+Average Recall: 0.0376273
+Dimension: 4
+Object number: 3000
+Average Disk Time: 128.987
+Average Accuracy: 0.183574
+Average Recall: 0.0558473
+Dimension: 4
+Object number: 4000
+Average Disk Time: 157.457
+Average Accuracy: 0.192402
+Average Recall: 0.0777741
+Dimension: 4
+Object number: 5000
+Average Disk Time: 189.625
+Average Accuracy: 0.184893
+Average Recall: 0.0913812
+==========================
+Dimension: 5
+Object number: 1000
+Average Disk Time: 49.1686
+Average Accuracy: 0.192297
+Average Recall: 0.0171947
+Dimension: 5
+Object number: 2000
+Average Disk Time: 87.0206
+Average Accuracy: 0.189849
+Average Recall: 0.0345343
+Dimension: 5
+Object number: 3000
+Average Disk Time: 120.997
+Average Accuracy: 0.194776
+Average Recall: 0.0504382
+Dimension: 5
+Object number: 4000
+Average Disk Time: 163.886
+Average Accuracy: 0.191491
+Average Recall: 0.0682936
+Dimension: 5
+Object number: 5000
+Average Disk Time: 202.179
+Average Accuracy: 0.198167
+Average Recall: 0.0891568
+==========================
+Dimension: 6
+Object number: 1000
+Average Disk Time: 46.9332
+Average Accuracy: 0.198262
+Average Recall: 0.0154566
+Dimension: 6
+Object number: 2000
+Average Disk Time: 91.52
+Average Accuracy: 0.205485
+Average Recall: 0.0305178
+Dimension: 6
+Object number: 3000
+Average Disk Time: 132.696
+Average Accuracy: 0.206051
+Average Recall: 0.0459809
+Dimension: 6
+Object number: 4000
+Average Disk Time: 170.663
+Average Accuracy: 0.208765
+Average Recall: 0.0626758
+Dimension: 6
+Object number: 5000
+Average Disk Time: 210.25
+Average Accuracy: 0.204973
+Average Recall: 0.0788698
+==========================
+Dimension: 7
+Object number: 1000
+Average Disk Time: 49.1018
+Average Accuracy: 0.201601
+Average Recall: 0.0160057
+Dimension: 7
+Object number: 2000
+Average Disk Time: 89.6688
+Average Accuracy: 0.21249
+Average Recall: 0.0313283
+Dimension: 7
+Object number: 3000
+Average Disk Time: 136.396
+Average Accuracy: 0.210338
+Average Recall: 0.0469816
+Dimension: 7
+Object number: 4000
+Average Disk Time: 170.408
+Average Accuracy: 0.20745
+Average Recall: 0.0615257
+Dimension: 7
+Object number: 5000
+Average Disk Time: 213.948
+Average Accuracy: 0.209246
+Average Recall: 0.0767337
+==========================
+Dimension: 8
+Object number: 1000
+Average Disk Time: 51.7508
+Average Accuracy: 0.206273
+Average Recall: 0.0148817
+Dimension: 8
+Object number: 2000
+Average Disk Time: 95.8874
+Average Accuracy: 0.203229
+Average Recall: 0.0291897
+Dimension: 8
+Object number: 3000
+Average Disk Time: 137.359
+Average Accuracy: 0.205705
+Average Recall: 0.0436315
+Dimension: 8
+Object number: 4000
+Average Disk Time: 176.49
+Average Accuracy: 0.214084
+Average Recall: 0.0608576
+Dimension: 8
+Object number: 5000
+Average Disk Time: 221.923
+Average Accuracy: 0.210266
+Average Recall: 0.0759392
+==========================
+Dimension: 9
+Object number: 1000
+Average Disk Time: 52.7324
+Average Accuracy: 0.20384
+Average Recall: 0.0156955
+Dimension: 9
+Object number: 2000
+Average Disk Time: 98.561
+Average Accuracy: 0.211222
+Average Recall: 0.0291411
+Dimension: 9
+Object number: 3000
+Average Disk Time: 143.368
+Average Accuracy: 0.21293
+Average Recall: 0.0444731
+Dimension: 9
+Object number: 4000
+Average Disk Time: 181.726
+Average Accuracy: 0.211586
+Average Recall: 0.0591593
+Dimension: 9
+Object number: 5000
+Average Disk Time: 223.532
+Average Accuracy: 0.211692
+Average Recall: 0.0733687

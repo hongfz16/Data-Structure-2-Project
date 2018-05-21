@@ -15,6 +15,8 @@ struct Datainfo
 	int datanum;
 	int classnum;
 	int dim;
+	vector<int> minbound;
+	vector<int> maxbound;
 	vector<int> classcount;
 };
 
@@ -55,6 +57,9 @@ struct Result
 vector<Pic> pics;
 Datainfo datainfo;
 
+const int cdim = 9;
+RTree<Pic*, float, cdim> rt;
+
 const string datafilename = "../../../Feature/ColorMoment/feature.txt";
 
 void initdata()
@@ -72,7 +77,8 @@ void initdata()
 		dim *= 10;
 		dim += line[i] - '0';
 	}
-	cout << dim << endl;
+	datainfo.minbound.resize(dim, INT_MAX);
+	datainfo.maxbound.resize(dim, 0);
 	while (getline(fin, line))
 	{
 		filename.clear();
@@ -101,7 +107,7 @@ void initdata()
 				if (line[linecount] != ' ')
 				{
 					tempdim *= 10;
-					tempdim += line[linecount - '0'];
+					tempdim += line[linecount] - '0';
 				}
 				else
 				{
@@ -109,10 +115,11 @@ void initdata()
 				}
 			}
 			dims.push_back(tempdim);
+			if (tempdim > datainfo.maxbound[i])
+				datainfo.maxbound[i] = tempdim;
+			if (tempdim < datainfo.minbound[i])
+				datainfo.minbound[i] = tempdim;
 		}
-
-		struct Pic pic(idcount, filename, classname, classidcount, dim, dims);
-		pics.push_back(pic);
 		++idcount;
 		if (classnames.find(classname) == classnames.end())
 		{
@@ -122,11 +129,14 @@ void initdata()
 		}
 		else
 		{
-			datainfo.classcount[classidcount]++;
+			datainfo.classcount[classidcount-1]++;
 		}
+
+		Pic pic(idcount, filename, classname, classidcount, dim, dims);
+		pics.push_back(pic);
 	}
-	datainfo.classnum = classidcount + 1;
-	datainfo.datanum = idcount + 1;
+	datainfo.classnum = classidcount;
+	datainfo.datanum = idcount;
 	datainfo.dim = dim;
 }
 
@@ -137,8 +147,6 @@ bool _cdecl QueryResultCallback(Pic* a_data, vector<int>& resultid)
 	return true;
 }
 
-const int cdim = 2;
-RTree<Pic*, float, cdim> rt;
 
 Result testRtree(int objnum,int range)
 {
@@ -159,31 +167,42 @@ Result testRtree(int objnum,int range)
 		}
 		rt.Insert(cmin, cmax, &pics[id]);
 	}
-	double alldisktime, allaccur, allrecall;
-	vector<int> resultid;
+	double alldisktime=0.0, allaccur=0.0, allrecall=0.0;
 	for (int i = 0; i < TESTNUM; ++i)
 	{
-		resultid.clear();
+		vector<int> resultid;
 		int id = rand() % datainfo.datanum;
 		float cmin[cdim], cmax[cdim];
 		for (int j = 0; j < cdim; ++j)
 		{
 			cmin[j] = pics[id].dims[j] - range;
 			cmax[j] = pics[id].dims[j] + range;
+			if (pics[id].dims[j] - range < datainfo.minbound[j])
+				cmin[j] = datainfo.minbound[j];
+			if (pics[id].dims[j] + range > datainfo.maxbound[j])
+				cmax[j] = datainfo.maxbound[j];
 		}
+		//cout << "before search" << endl;
 		rt.Search(cmin, cmax, QueryResultCallback, resultid);
+		//cout << "aftersearch" << endl;
 		alldisktime += rt.disktime;
 		int allresult = resultid.size();
 		int hit = 0;
 		for (int k = 0; k < resultid.size(); ++k)
 		{
-			if (pics[resultid[k]].classid == pics[id].classid)
+			if (pics[resultid[k]-1].classid == pics[id].classid)
 			{
 				hit++;
 			}
 		}
+		//cout << allresult << " " << hit << endl;
+		if (allresult == 0)
+			continue;
 		allaccur += (static_cast<double>(hit) / allresult);
-		allrecall += (static_cast<double>(hit) / datainfo.classcount[pics[id].classid]);
+		//cout << "2" << endl;
+		//cout << pics[id].classid << endl;
+		allrecall += (static_cast<double>(hit) / datainfo.classcount[pics[id].classid-1]);
+		//cout << "1" << endl;
 	}
 	Result result(alldisktime / TESTNUM, allaccur / TESTNUM, allrecall / TESTNUM);
 	return result;
@@ -192,7 +211,9 @@ Result testRtree(int objnum,int range)
 int main()
 {
 	initdata();
-	int range = 50;
+	//cout << datainfo.classnum << endl;
+	//cout << datainfo.classcount.size() << endl;
+	int range = 20;
 	int objnum[5] = { 1000,2000,3000,4000,5000 };
 	for (int i = 0; i < 5; ++i)
 	{
