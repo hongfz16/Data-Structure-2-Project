@@ -1,11 +1,4 @@
-#define _MEMORY_POOL_
-
-#ifndef _MEMORY_POOL_
-#include "../../../Lib/RTree.h"
-#endif
-#ifdef _MEMORY_POOL_
 #include "../../../Lib/RTreeMemPool.h"
-#endif
 
 #include "../../../Lib/Rectangle.h"
 #include <iostream>
@@ -188,12 +181,13 @@ Result testTime(int inserttime, int deletetime)
 
 int main()
 {
-#ifdef _MEMORY_POOL_
-	cout << "Using Memory Pool" << endl;
-#endif
-#ifndef _MEMORY_POOL_
-	cout << "Not Using Memory Pool" << endl;
-#endif
+	rt.setMemPoolValid(true);
+	rt.setSpherVolValid(true);
+	if(rt.memPoolValid())
+		cout << "Using Memory Pool" << endl;
+	else
+		cout << "Not Using Memory Pool" << endl;
+
 	initdata();
 	Result result = testTime(5000, 5000);
 	cout << "Average Insert Time: " << result.averageinserttime << "ms." << endl;

@@ -40,12 +40,12 @@ template <typename T>
 class MemoryPool
 {
 public:
-	MemoryPool(int _size):m_size(_size),m_curIndex(0)
+	MemoryPool(int _size):m_size(_size)
 	{
 		m_pMemory = new T[_size];
 		for(int i=0; i<_size; i++)
 		{
-			deque.push_back(i);
+			dq.push_back(i);
 		}
 	}
 	~MemoryPool()
@@ -58,10 +58,10 @@ public:
 	}
 	void reset()
 	{
-		deque.clear();
-		for(int i=0; i<_size; i++)
+		dq.clear();
+		for(int i=0; i<m_size; i++)
 		{
-			deque.push_back(i);
+			dq.push_back(i);
 		}
 	}
 	T* get()//get new memory
@@ -76,7 +76,7 @@ public:
 	}
 	void retr(T* elem)
 	{
-		if(elem < m_pMemory || elem-m_pMemory >= size)
+		if(elem < m_pMemory || elem-m_pMemory >= m_size)
 		{
 			//a wrong retr operation out of range
 		}
@@ -133,8 +133,16 @@ public:
 
 public:
 
-  RTree(bool USE_SPHERICAL_VOLUME, bool USE_MEMPOOLS);
+  RTree(bool USE_SPHERICAL_VOLUME = true, bool USE_MEMPOOLS = true);
   virtual ~RTree();
+
+  //memory pool
+  void setMemPoolValid(bool isValid);
+  bool memPoolValid();
+
+  //USE_SPHERICAL_VOLUME
+  void setSpherVolValid(bool isValid);
+  bool spherVolValid();
   
   /// Insert entry
   /// \param a_min Min of bounding rect
@@ -430,7 +438,7 @@ protected:
   
   Node* m_root;                                    ///< Root of tree
   ELEMTYPEREAL m_unitSphereVolume;                 ///< Unit sphere constant for required number of dimensions
-  MemoryPool<Node>* m_memPool;
+  MemoryPool<Node> *m_memPool;
   bool USE_SPHERICAL_VOLUME;
   bool USE_MEMPOOLS;
 };
@@ -515,7 +523,7 @@ public:
 
 
 RTREE_TEMPLATE
-RTREE_QUAL::RTree(bool USE_SPHERICAL_VOLUME, bool USE_MEMPOOLS)
+RTREE_QUAL::RTree(bool _USE_SPHERICAL_VOLUME, bool _USE_MEMPOOLS)
 {
   ASSERT(MAXNODES > MINNODES);
   ASSERT(MINNODES > 0);
@@ -540,9 +548,12 @@ RTREE_QUAL::RTree(bool USE_SPHERICAL_VOLUME, bool USE_MEMPOOLS)
   m_root->m_level = 0;
   m_unitSphereVolume = (ELEMTYPEREAL)UNIT_SPHERE_VOLUMES[NUMDIMS];
 
-  bool USE_SPHERICAL_VOLUME = 
-  bool USE_MEMPOOLS
-  m_memPool = new MemoryPool<Node*>(6000);
+  bool USE_SPHERICAL_VOLUME = _USE_SPHERICAL_VOLUME;
+  bool USE_MEMPOOLS = _USE_MEMPOOLS;
+  if(USE_MEMPOOLS)
+    m_memPool = new MemoryPool<Node>(6000);
+  else
+    m_memPool = nullptr;
 }
 
 
@@ -550,7 +561,32 @@ RTREE_TEMPLATE
 RTREE_QUAL::~RTree()
 {
   Reset(); // Free, or reset node memory
-  delete m_memPool;
+  if(USE_MEMPOOLS)
+    delete m_memPool;
+}
+
+RTREE_TEMPLATE
+void RTREE_QUAL::setMemPoolValid(bool isValid)
+{
+	USE_MEMPOOLS = isValid;
+}
+
+RTREE_TEMPLATE
+bool RTREE_QUAL::memPoolValid()
+{
+	return USE_MEMPOOLS;
+}
+
+RTREE_TEMPLATE
+void RTREE_QUAL::setSpherVolValid(bool isValid)
+{
+	USE_SPHERICAL_VOLUME = isValid;
+}
+
+RTREE_TEMPLATE
+bool RTREE_QUAL::spherVolValid()
+{
+	return USE_SPHERICAL_VOLUME;
 }
 
 
@@ -852,13 +888,12 @@ void RTREE_QUAL::RemoveAll()
 RTREE_TEMPLATE
 void RTREE_QUAL::Reset()
 {
-#ifdef RTREE_DONT_USE_MEMPOOLS
+if(!USE_MEMPOOLS)
   // Delete all existing nodes
   RemoveAllRec(m_root);
-#else // RTREE_DONT_USE_MEMPOOLS
+else 
   // Just reset memory pools.  We are not using complex types
   m_memPool->reset();
-#endif // RTREE_DONT_USE_MEMPOOLS
 }
 
 
@@ -883,11 +918,11 @@ RTREE_TEMPLATE
 typename RTREE_QUAL::Node* RTREE_QUAL::AllocNode()
 {
   Node* newNode;
-#ifdef RTREE_DONT_USE_MEMPOOLS
+if(!USE_MEMPOOLS)
   newNode = new Node;
-#else // RTREE_DONT_USE_MEMPOOLS
+else
   newNode = m_memPool->get();
-#endif // RTREE_DONT_USE_MEMPOOLS
+
   InitNode(newNode);
   return newNode;
 }
@@ -898,11 +933,11 @@ void RTREE_QUAL::FreeNode(Node* a_node)
 {
   ASSERT(a_node);
 
-#ifdef RTREE_DONT_USE_MEMPOOLS
+if(!USE_MEMPOOLS)
   delete a_node;
-#else // RTREE_DONT_USE_MEMPOOLS
+else
   m_memPool->retr(a_node);
-#endif // RTREE_DONT_USE_MEMPOOLS
+
 }
 
 
@@ -1258,11 +1293,11 @@ ELEMTYPEREAL RTREE_QUAL::RectSphericalVolume(Rect* a_rect)
 RTREE_TEMPLATE
 ELEMTYPEREAL RTREE_QUAL::CalcRectVolume(Rect* a_rect)
 {
-#ifdef RTREE_USE_SPHERICAL_VOLUME
+if(USE_SPHERICAL_VOLUME)
   return RectSphericalVolume(a_rect); // Slower but helps certain merge cases
-#else // RTREE_USE_SPHERICAL_VOLUME
+else
   return RectVolume(a_rect); // Faster but can cause poor merges
-#endif // RTREE_USE_SPHERICAL_VOLUME  
+
 }
 
 
