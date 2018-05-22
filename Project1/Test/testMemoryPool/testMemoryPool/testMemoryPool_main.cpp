@@ -7,6 +7,7 @@
 #include "../../../Lib/RTreeMemPool.h"
 #endif
 
+#include "../../../Lib/Rectangle.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -48,21 +49,19 @@ struct Pic
 
 struct Result
 {
-	double disktime;
-	double accur;
-	double recall;
-	Result(double _disktime, double _accur, double _recall)
+	double averageinserttime;
+	double averagedeletetime;
+	Result(double _av1, double _av2)
 	{
-		disktime = _disktime;
-		accur = _accur;
-		recall = _recall;
+		averageinserttime = _av1;
+		averagedeletetime = _av2;
 	}
 };
 
 vector<Pic> pics;
 Datainfo datainfo;
 
-const int cdim = 2;
+const int cdim = 9;
 RTree<Pic*, float, cdim> rt;
 
 const string datafilename = "../../../Feature/ColorMoment/feature.txt";
@@ -145,3 +144,59 @@ void initdata()
 	datainfo.dim = dim;
 }
 
+Result testTime(int inserttime, int deletetime)
+{
+	rt.RemoveAll();
+	srand((unsigned)time(nullptr));
+	float cmin[cdim], cmax[cdim];
+	clock_t start = clock();
+	vector<int> inserted;
+	inserted.reserve(inserttime);
+	for (int i = 0; i < inserttime; ++i)
+	{
+		int id =rand() % datainfo.datanum;
+		for (int j = 0; j < cdim; ++j)
+		{
+			cmin[j] = cmax[j] = pics[id].dims[j];
+		}
+		rt.Insert(cmin, cmax, &pics[id]);
+		inserted[i] = id;
+	}
+	clock_t time1 = clock() - start;
+	for (int i = 0; i < inserttime; ++i)
+	{
+		int p1 = rand() % inserttime;
+		int p2 = rand() % inserttime;
+		int temp = inserted[p1];
+		inserted[p1] = inserted[p2];
+		inserted[p2] = temp;
+	}
+	start = clock();
+	for (int i = 0; i < inserttime; ++i)
+	{
+		int id = inserted[i];
+		for (int j = 0; j < cdim; ++j)
+		{
+			cmin[j] = cmax[j] = pics[id].dims[j];
+		}
+		rt.Remove(cmin, cmax, &pics[id]);
+	}
+	clock_t time2 = clock() - start;
+	Result result(static_cast<double>(time1) / inserttime, static_cast<double>(time2) / deletetime);
+	return result;
+}
+
+int main()
+{
+#ifdef _MEMORY_POOL_
+	cout << "Using Memory Pool" << endl;
+#endif
+#ifndef _MEMORY_POOL_
+	cout << "Not Using Memory Pool" << endl;
+#endif
+	initdata();
+	Result result = testTime(5000, 5000);
+	cout << "Average Insert Time: " << result.averageinserttime << "ms." << endl;
+	cout << "Average Delete Time: " << result.averagedeletetime << "ms." << endl;
+	return 0;
+}

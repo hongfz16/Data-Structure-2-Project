@@ -144,6 +144,11 @@
   <ItemGroup>
     <ClCompile Include="testMemoryPool_main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Lib\Rectangle.h" />
+    <ClInclude Include="..\..\..\Lib\RTree.h" />
+    <ClInclude Include="..\..\..\Lib\RTreeMemPool.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -538,7 +538,7 @@ RTREE_QUAL::RTree()
   m_root->m_level = 0;
   m_unitSphereVolume = (ELEMTYPEREAL)UNIT_SPHERE_VOLUMES[NUMDIMS];
 
-  m_memPool = new MemoryPool<Node*>(6000);
+  m_memPool = new MemoryPool<Node>(6000);
 }
 
 
