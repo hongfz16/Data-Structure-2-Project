@@ -10,7 +10,8 @@
 #include <stdlib.h>
 #include <vector>
 #include <vector>
-#include <MemoryPool.h>
+#include <deque>
+using std::deque;
 using std::vector;
 
 #define ASSERT assert // RTree uses ASSERT( condition )
@@ -33,6 +34,63 @@ using std::vector;
 
 // Fwd decl
 class RTFileStream;  // File I/O helper class, look below for implementation and notes.
+
+//MemoryPool
+template <typename T>
+class MemoryPool
+{
+public:
+	MemoryPool(int _size):m_size(_size),m_curIndex(0)
+	{
+		m_pMemory = new T[_size];
+		for(int i=0; i<_size; i++)
+		{
+			deque.push_back(i);
+		}
+	}
+	~MemoryPool()
+	{
+		delete [] m_pMemory;
+	}
+	int rest()
+	{
+		return dq.size();
+	}
+	void reset()
+	{
+		deque.clear();
+		for(int i=0; i<_size; i++)
+		{
+			deque.push_back(i);
+		}
+	}
+	T* get()//get new memory
+	{
+		if(dq.empty())
+		{
+			return nullptr;
+		}
+		T* toUse = m_pMemory + dq.front();
+		dq.pop_front();
+		return toUse;
+	}
+	void retr(T* elem)
+	{
+		if(elem < m_pMemory || elem-m_pMemory >= size)
+		{
+			//a wrong retr operation out of range
+		}
+		else
+		{
+			dq.push_back(elem-m_pMemory);
+		}
+	}
+
+private:
+	int m_size;
+	deque<int> dq;
+	T* m_pMemory;
+};
 
 
 /// \class RTree
@@ -75,7 +133,7 @@ public:
 
 public:
 
-  RTree(MemoryPool<Node*> _memPool);
+  RTree();
   virtual ~RTree();
   
   /// Insert entry
@@ -372,7 +430,7 @@ protected:
   
   Node* m_root;                                    ///< Root of tree
   ELEMTYPEREAL m_unitSphereVolume;                 ///< Unit sphere constant for required number of dimensions
-  MemoryPool<Node>* memPool;
+  MemoryPool<Node>* m_memPool;
 };
 
 
@@ -480,7 +538,7 @@ RTREE_QUAL::RTree()
   m_root->m_level = 0;
   m_unitSphereVolume = (ELEMTYPEREAL)UNIT_SPHERE_VOLUMES[NUMDIMS];
 
-  memPool = _memPool;
+  m_memPool = new MemoryPool<Node*>(6000);
 }
 
 
@@ -488,6 +546,7 @@ RTREE_TEMPLATE
 RTREE_QUAL::~RTree()
 {
   Reset(); // Free, or reset node memory
+  delete m_memPool;
 }
 
 
@@ -794,7 +853,7 @@ void RTREE_QUAL::Reset()
   RemoveAllRec(m_root);
 #else // RTREE_DONT_USE_MEMPOOLS
   // Just reset memory pools.  We are not using complex types
-  memPool->reset();
+  m_memPool->reset();
 #endif // RTREE_DONT_USE_MEMPOOLS
 }
 
@@ -823,7 +882,7 @@ typename RTREE_QUAL::Node* RTREE_QUAL::AllocNode()
 #ifdef RTREE_DONT_USE_MEMPOOLS
   newNode = new Node;
 #else // RTREE_DONT_USE_MEMPOOLS
-  newNode = memPool->get();
+  newNode = m_memPool->get();
 #endif // RTREE_DONT_USE_MEMPOOLS
   InitNode(newNode);
   return newNode;
@@ -838,7 +897,7 @@ void RTREE_QUAL::FreeNode(Node* a_node)
 #ifdef RTREE_DONT_USE_MEMPOOLS
   delete a_node;
 #else // RTREE_DONT_USE_MEMPOOLS
-  memPool->retr(a_node);
+  m_memPool->retr(a_node);
 #endif // RTREE_DONT_USE_MEMPOOLS
 }
 
