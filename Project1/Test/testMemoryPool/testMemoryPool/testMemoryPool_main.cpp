@@ -55,7 +55,7 @@ vector<Pic> pics;
 Datainfo datainfo;
 
 const int cdim = 9;
-RTree<Pic*, float, cdim> rt;
+RTree<Pic*, float, cdim>* rt;
 
 const string datafilename = "../../../Feature/ColorMoment/feature.txt";
 
@@ -139,7 +139,7 @@ void initdata()
 
 Result testTime(int inserttime, int deletetime)
 {
-	rt.RemoveAll();
+	rt->RemoveAll();
 	srand((unsigned)time(nullptr));
 	float cmin[cdim], cmax[cdim];
 	clock_t start = clock();
@@ -150,9 +150,9 @@ Result testTime(int inserttime, int deletetime)
 		int id =rand() % datainfo.datanum;
 		for (int j = 0; j < cdim; ++j)
 		{
-			cmin[j] = cmax[j] = pics[id].dims[j]+rand()%1000;
+			cmin[j] = cmax[j] = pics[id].dims[j];
 		}
-		rt.Insert(cmin, cmax, &pics[id]);
+		rt->Insert(cmin, cmax, &pics[id]);
 		inserted[i] = id;
 	}
 	clock_t time1 = clock() - start;
@@ -164,15 +164,29 @@ Result testTime(int inserttime, int deletetime)
 		inserted[p1] = inserted[p2];
 		inserted[p2] = temp;
 	}
+
 	start = clock();
 	for (int i = 0; i < inserttime; ++i)
 	{
 		int id = inserted[i];
 		for (int j = 0; j < cdim; ++j)
 		{
-			cmin[j] = cmax[j] = pics[id].dims[j]+rand()%1000;
+			cmin[j] = cmax[j] = pics[id].dims[j];
 		}
-		rt.Remove(cmin, cmax, &pics[id]);
+		rt->Remove(cmin, cmax, &pics[id]);
+		rt->Insert(cmin, cmax, &pics[id]);
+	}
+	cout << "Average operate time: " << static_cast<double>(clock() - start)/(2*inserttime) << "ms." << endl;
+
+	start = clock();
+	for (int i = 0; i < inserttime; ++i)
+	{
+		int id = inserted[i];
+		for (int j = 0; j < cdim; ++j)
+		{
+			cmin[j] = cmax[j] = pics[id].dims[j];
+		}
+		rt->Remove(cmin, cmax, &pics[id]);
 	}
 	clock_t time2 = clock() - start;
 	Result result(static_cast<double>(time1) / inserttime, static_cast<double>(time2) / deletetime);
@@ -181,20 +195,23 @@ Result testTime(int inserttime, int deletetime)
 
 int main()
 {
-	rt.setMemPoolValid(true);
-	rt.setSpherVolValid(false);
+	int testtime = 50000;
+	rt = new RTree<Pic*, float, cdim>(testtime);
+
+	rt->setMemPoolValid(true);
+	rt->setSpherVolValid(false);
 
 	initdata();
 
 	cout << "Using memory pool" << endl;
-	Result result = testTime(5000, 5000);
+	Result result = testTime(testtime, testtime);
 	cout << "Average Insert Time: " << result.averageinserttime << "ms." << endl;
 	cout << "Average Delete Time: " << result.averagedeletetime << "ms." << endl;
 	
 	cout << "Not using memory pool" << endl;
-	rt.RemoveAll();
-	rt.setMemPoolValid(false);
-	Result result2 = testTime(5000, 5000);
+	rt->RemoveAll();
+	rt->setMemPoolValid(false);
+	Result result2 = testTime(testtime, testtime);
 	cout << "Average Insert Time: " << result2.averageinserttime << "ms." << endl;
 	cout << "Average Delete Time: " << result2.averagedeletetime << "ms." << endl;
 
