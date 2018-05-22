@@ -144,13 +144,13 @@ Result testTime(int inserttime, int deletetime)
 	float cmin[cdim], cmax[cdim];
 	clock_t start = clock();
 	vector<int> inserted;
-	inserted.reserve(inserttime);
+	inserted.resize(inserttime);
 	for (int i = 0; i < inserttime; ++i)
 	{
 		int id =rand() % datainfo.datanum;
 		for (int j = 0; j < cdim; ++j)
 		{
-			cmin[j] = cmax[j] = pics[id].dims[j];
+			cmin[j] = cmax[j] = pics[id].dims[j]+rand()%1000;
 		}
 		rt.Insert(cmin, cmax, &pics[id]);
 		inserted[i] = id;
@@ -170,7 +170,7 @@ Result testTime(int inserttime, int deletetime)
 		int id = inserted[i];
 		for (int j = 0; j < cdim; ++j)
 		{
-			cmin[j] = cmax[j] = pics[id].dims[j];
+			cmin[j] = cmax[j] = pics[id].dims[j]+rand()%1000;
 		}
 		rt.Remove(cmin, cmax, &pics[id]);
 	}
@@ -182,15 +182,21 @@ Result testTime(int inserttime, int deletetime)
 int main()
 {
 	rt.setMemPoolValid(true);
-	rt.setSpherVolValid(true);
-	if(rt.memPoolValid())
-		cout << "Using Memory Pool" << endl;
-	else
-		cout << "Not Using Memory Pool" << endl;
+	rt.setSpherVolValid(false);
 
 	initdata();
+
+	cout << "Using memory pool" << endl;
 	Result result = testTime(5000, 5000);
 	cout << "Average Insert Time: " << result.averageinserttime << "ms." << endl;
 	cout << "Average Delete Time: " << result.averagedeletetime << "ms." << endl;
+	
+	cout << "Not using memory pool" << endl;
+	rt.RemoveAll();
+	rt.setMemPoolValid(false);
+	Result result2 = testTime(5000, 5000);
+	cout << "Average Insert Time: " << result2.averageinserttime << "ms." << endl;
+	cout << "Average Delete Time: " << result2.averagedeletetime << "ms." << endl;
+
 	return 0;
 }

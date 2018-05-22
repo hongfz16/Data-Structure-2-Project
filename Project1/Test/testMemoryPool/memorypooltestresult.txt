@@ -1,0 +1,19 @@
+Use Sphere
+
+Using memory pool
+Average Insert Time: 0.016ms.
+Average Delete Time: 0.0156ms.
+
+Not using memory pool
+Average Insert Time: 0.0162ms.
+Average Delete Time: 0.016ms.
+
+Not Use Sphere
+
+Using memory pool
+Average Insert Time: 0.0106ms.
+Average Delete Time: 0.0122ms.
+
+Not using memory pool
+Average Insert Time: 0.0104ms.
+Average Delete Time: 0.0124ms.
