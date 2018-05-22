@@ -545,12 +545,14 @@ RTREE_QUAL::RTree(int _MAX_SIZE)
     0.082146f, 0.046622f, 0.025807f, // Dimension  18,19,20 
   };
 
+  MAX_SIZE = _MAX_SIZE;
+  m_memPool = new MemoryPool<Node>(MAX_SIZE);
+
   m_root = AllocNode();
   m_root->m_level = 0;
   m_unitSphereVolume = (ELEMTYPEREAL)UNIT_SPHERE_VOLUMES[NUMDIMS];
 
-  MAX_SIZE = _MAX_SIZE;
-  m_memPool = new MemoryPool<Node>(MAX_SIZE);
+  
 }
 
 
