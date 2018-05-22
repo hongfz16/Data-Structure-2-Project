@@ -1,5 +1,12 @@
+#define _MEMORY_POOL_
+
+#ifndef _MEMORY_POOL_
 #include "../../../Lib/RTree.h"
-#include "../../../Lib/Rectangle.h"
+#endif
+#ifdef _MEMORY_POOL_
+#include "../../../Lib/RTreeMemPool.h"
+#endif
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -7,8 +14,6 @@
 #include <fstream>
 #include <ctime>
 using namespace std;
-
-#define TESTNUM 5000
 
 struct Datainfo
 {
@@ -57,7 +62,7 @@ struct Result
 vector<Pic> pics;
 Datainfo datainfo;
 
-const int cdim = 9;
+const int cdim = 2;
 RTree<Pic*, float, cdim> rt;
 
 const string datafilename = "../../../Feature/ColorMoment/feature.txt";
@@ -129,7 +134,7 @@ void initdata()
 		}
 		else
 		{
-			datainfo.classcount[classidcount-1]++;
+			datainfo.classcount[classidcount - 1]++;
 		}
 
 		Pic pic(idcount, filename, classname, classidcount, dim, dims);
@@ -140,81 +145,3 @@ void initdata()
 	datainfo.dim = dim;
 }
 
-
-bool _cdecl QueryResultCallback(Pic* a_data, vector<int>& resultid)
-{
-	resultid.push_back(a_data->id);
-	return true;
-}
-
-
-Result testRtree(int objnum,int range)
-{
-	rt.RemoveAll();
-	srand((unsigned int)time(nullptr));
-	set<int> chosenpics;
-	for (int i = 0; i < objnum; ++i)
-	{
-		int id = rand() % datainfo.datanum;
-		while (chosenpics.find(id) != chosenpics.end())
-		{
-			id = rand() % datainfo.datanum;
-		}
-		float cmin[cdim], cmax[cdim];
-		for (int j = 0; j < cdim; ++j)
-		{
-			cmin[j] = cmax[j] = pics[id].dims[j];
-		}
-		rt.Insert(cmin, cmax, &pics[id]);
-	}
-	double alldisktime=0.0, allaccur=0.0, allrecall=0.0;
-	for (int i = 0; i < TESTNUM; ++i)
-	{
-		vector<int> resultid;
-		int id = rand() % datainfo.datanum;
-		float cmin[cdim], cmax[cdim];
-		for (int j = 0; j < cdim; ++j)
-		{
-			cmin[j] = pics[id].dims[j] - range;
-			cmax[j] = pics[id].dims[j] + range;
-			if (pics[id].dims[j] - range < datainfo.minbound[j])
-				cmin[j] = datainfo.minbound[j];
-			if (pics[id].dims[j] + range > datainfo.maxbound[j])
-				cmax[j] = datainfo.maxbound[j];
-		}
-		rt.Search(cmin, cmax, QueryResultCallback, resultid);
-		alldisktime += rt.disktime;
-		int allresult = resultid.size();
-		int hit = 0;
-		for (int k = 0; k < resultid.size(); ++k)
-		{
-			if (pics[resultid[k]-1].classid == pics[id].classid)
-			{
-				hit++;
-			}
-		}
-		if (allresult == 0)
-			continue;
-		allaccur += (static_cast<double>(hit) / allresult);
-		allrecall += (static_cast<double>(hit) / datainfo.classcount[pics[id].classid-1]);
-	}
-	Result result(alldisktime / TESTNUM, allaccur / TESTNUM, allrecall / TESTNUM);
-	return result;
-}
-
-int main()
-{
-	initdata();
-	int range = 20;
-	int objnum[5] = { 1000,2000,3000,4000,5000 };
-	for (int i = 0; i < 5; ++i)
-	{
-		Result result = testRtree(objnum[i], range);
-		cout << "Dimension: " << cdim << endl;
-		cout << "Object number: " << objnum[i] << endl;
-		cout << "Average Disk Time: " << result.disktime << endl;
-		cout << "Average Accuracy: " << result.accur << endl;
-		cout << "Average Recall: " << result.recall << endl;
-	}
-	return 0;
-}
