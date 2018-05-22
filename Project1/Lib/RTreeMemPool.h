@@ -30,7 +30,7 @@ using std::vector;
 #define RTREE_QUAL RTree<DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES>
 
 //#define RTREE_DONT_USE_MEMPOOLS // This version does not contain a fixed memory allocator, fill in lines with EXAMPLE to implement one.
-#define RTREE_USE_SPHERICAL_VOLUME // Better split classification, may be slower on some systems
+//#define RTREE_USE_SPHERICAL_VOLUME // Better split classification, may be slower on some systems
 
 // Fwd decl
 class RTFileStream;  // File I/O helper class, look below for implementation and notes.
@@ -133,7 +133,7 @@ public:
 
 public:
 
-  RTree();
+  RTree(bool USE_SPHERICAL_VOLUME, bool USE_MEMPOOLS);
   virtual ~RTree();
   
   /// Insert entry
@@ -431,6 +431,8 @@ protected:
   Node* m_root;                                    ///< Root of tree
   ELEMTYPEREAL m_unitSphereVolume;                 ///< Unit sphere constant for required number of dimensions
   MemoryPool<Node>* m_memPool;
+  bool USE_SPHERICAL_VOLUME;
+  bool USE_MEMPOOLS;
 };
 
 
@@ -513,7 +515,7 @@ public:
 
 
 RTREE_TEMPLATE
-RTREE_QUAL::RTree()
+RTREE_QUAL::RTree(bool USE_SPHERICAL_VOLUME, bool USE_MEMPOOLS)
 {
   ASSERT(MAXNODES > MINNODES);
   ASSERT(MINNODES > 0);
@@ -538,6 +540,8 @@ RTREE_QUAL::RTree()
   m_root->m_level = 0;
   m_unitSphereVolume = (ELEMTYPEREAL)UNIT_SPHERE_VOLUMES[NUMDIMS];
 
+  bool USE_SPHERICAL_VOLUME = 
+  bool USE_MEMPOOLS
   m_memPool = new MemoryPool<Node*>(6000);
 }
 
