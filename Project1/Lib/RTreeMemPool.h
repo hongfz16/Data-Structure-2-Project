@@ -26,8 +26,8 @@ using std::vector;
 // RTree.h
 //
 
-#define RTREE_TEMPLATE template<class DATATYPE, class ELEMTYPE, int NUMDIMS, class ELEMTYPEREAL, int TMAXNODES, int TMINNODES>
-#define RTREE_QUAL RTree<DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL, TMAXNODES, TMINNODES>
+#define RTREE_TEMPLATE template<class DATATYPE, class ELEMTYPE, int NUMDIMS, class ELEMTYPEREAL>
+#define RTREE_QUAL RTree<DATATYPE, ELEMTYPE, NUMDIMS, ELEMTYPEREAL>
 
 //#define RTREE_DONT_USE_MEMPOOLS // This version does not contain a fixed memory allocator, fill in lines with EXAMPLE to implement one.
 //#define RTREE_USE_SPHERICAL_VOLUME // Better split classification, may be slower on some systems
@@ -110,7 +110,7 @@ private:
 ///        array similar to MFC CArray or STL Vector for returning search query result.
 ///
 template<class DATATYPE, class ELEMTYPE, int NUMDIMS, 
-         class ELEMTYPEREAL = ELEMTYPE, int TMAXNODES = 8, int TMINNODES = TMAXNODES / 2>
+         class ELEMTYPEREAL = ELEMTYPE>
 class RTree
 {
 protected: 
@@ -126,14 +126,14 @@ public:
   // Stuck up here for MSVC 6 compiler.  NSVC .NET 2003 is much happier.
   enum
   {
-    MAXNODES = TMAXNODES,                         ///< Max elements in node
-    MINNODES = TMINNODES,                         ///< Min elements in node
+    MAXNODES = 8,                         ///< Max elements in node
+    MINNODES = 4,                         ///< Min elements in node
   };
 
 
 public:
 
-  RTree(int _MAX_SIZE);
+  RTree(int _MAX_SIZE = 5000, int _MAXNODES = 8, int  _MINMODES = 4);
   virtual ~RTree();
 
   //memory pool
@@ -143,6 +143,11 @@ public:
   //USE_SPHERICAL_VOLUME
   void setSpherVolValid(bool isValid);
   bool spherVolValid();
+
+  void setMaxNodes(int  _MAXNODES);
+  int maxNodes();
+  void setMinNodes(int  _MINNODES);
+  int minNodes();
   
   /// Insert entry
   /// \param a_min Min of bounding rect
@@ -442,6 +447,8 @@ protected:
   bool USE_SPHERICAL_VOLUME;
   bool USE_MEMPOOLS;
   int MAX_SIZE;
+  int MAXNODES;
+  int MINNODES;
 };
 
 
@@ -524,10 +531,10 @@ public:
 
 
 RTREE_TEMPLATE
-RTREE_QUAL::RTree(int _MAX_SIZE)
+RTREE_QUAL::RTree(int _MAX_SIZE, int _MAXNODES, int _MINNODES)
 {
-  ASSERT(MAXNODES > MINNODES);
-  ASSERT(MINNODES > 0);
+  ASSERT(_MAXNODES > _MINNODES);
+  ASSERT(_MINNODES > 0);
 
 
   // We only support machine word size simple data type eg. integer index or object pointer.
@@ -545,12 +552,15 @@ RTREE_QUAL::RTree(int _MAX_SIZE)
     0.082146f, 0.046622f, 0.025807f, // Dimension  18,19,20 
   };
 
+  MAX_SIZE = _MAX_SIZE;
+  m_memPool = new MemoryPool<Node>(MAX_SIZE);
+
+  MAXNODES = _MAXNODES;
+  MINNODES = _MINNODES;
+
   m_root = AllocNode();
   m_root->m_level = 0;
   m_unitSphereVolume = (ELEMTYPEREAL)UNIT_SPHERE_VOLUMES[NUMDIMS];
-
-  MAX_SIZE = _MAX_SIZE;
-  m_memPool = new MemoryPool<Node>(MAX_SIZE);
 }
 
 
@@ -583,6 +593,30 @@ RTREE_TEMPLATE
 bool RTREE_QUAL::spherVolValid()
 {
 	return USE_SPHERICAL_VOLUME;
+}
+
+RTREE_TEMPLATE
+void RTREE_QUAL::setMaxNodes(int  _MAXNODES)
+{
+  MAXNODES = _MAXNODES;
+}
+
+RTREE_TEMPLATE
+int RTREE_QUAL::maxNodes()
+{
+  return MAXNODES;
+}
+
+RTREE_TEMPLATE
+void RTREE_QUAL::setMinNodes(int  _MINNODES)
+{
+  MINNODES = _MINNODES;
+}
+
+RTREE_TEMPLATE
+int RTREE_QUAL::minNodes()
+{
+  return MINNODES;
 }
 
 
@@ -716,8 +750,8 @@ bool RTREE_QUAL::Load(RTFileStream& a_stream)
   int _dataNumDims = NUMDIMS;
   int _dataElemSize = sizeof(ELEMTYPE);
   int _dataElemRealSize = sizeof(ELEMTYPEREAL);
-  int _dataMaxNodes = TMAXNODES;
-  int _dataMinNodes = TMINNODES;
+  // int _dataMaxNodes = TMAXNODES;
+  // int _dataMinNodes = TMINNODES;
 
   int dataFileId = 0;
   int dataSize = 0;
@@ -817,8 +851,8 @@ bool RTREE_QUAL::Save(RTFileStream& a_stream)
   int dataNumDims = NUMDIMS;
   int dataElemSize = sizeof(ELEMTYPE);
   int dataElemRealSize = sizeof(ELEMTYPEREAL);
-  int dataMaxNodes = TMAXNODES;
-  int dataMinNodes = TMINNODES;
+  int dataMaxNodes = MAXNODES;
+  int dataMinNodes = MINNODES;
 
   a_stream.Write(dataFileId);
   a_stream.Write(dataSize);
