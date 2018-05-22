@@ -133,7 +133,7 @@ public:
 
 public:
 
-  RTree(bool USE_SPHERICAL_VOLUME = true, bool USE_MEMPOOLS = true);
+  RTree(int _MAX_SIZE);
   virtual ~RTree();
 
   //memory pool
@@ -441,6 +441,7 @@ protected:
   MemoryPool<Node> *m_memPool;
   bool USE_SPHERICAL_VOLUME;
   bool USE_MEMPOOLS;
+  int MAX_SIZE;
 };
 
 
@@ -523,7 +524,7 @@ public:
 
 
 RTREE_TEMPLATE
-RTREE_QUAL::RTree(bool _USE_SPHERICAL_VOLUME, bool _USE_MEMPOOLS)
+RTREE_QUAL::RTree(int _MAX_SIZE)
 {
   ASSERT(MAXNODES > MINNODES);
   ASSERT(MINNODES > 0);
@@ -548,12 +549,8 @@ RTREE_QUAL::RTree(bool _USE_SPHERICAL_VOLUME, bool _USE_MEMPOOLS)
   m_root->m_level = 0;
   m_unitSphereVolume = (ELEMTYPEREAL)UNIT_SPHERE_VOLUMES[NUMDIMS];
 
-  bool USE_SPHERICAL_VOLUME = _USE_SPHERICAL_VOLUME;
-  bool USE_MEMPOOLS = _USE_MEMPOOLS;
-  if(USE_MEMPOOLS)
-    m_memPool = new MemoryPool<Node>(6000);
-  else
-    m_memPool = nullptr;
+  MAX_SIZE = _MAX_SIZE;
+  m_memPool = new MemoryPool<Node>(MAX_SIZE);
 }
 
 
@@ -561,8 +558,7 @@ RTREE_TEMPLATE
 RTREE_QUAL::~RTree()
 {
   Reset(); // Free, or reset node memory
-  if(USE_MEMPOOLS)
-    delete m_memPool;
+  delete m_memPool;
 }
 
 RTREE_TEMPLATE
