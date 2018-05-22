@@ -1,4 +1,12 @@
+#define _MEMORY_POOL_
+
+#ifndef _MEMORY_POOL_
 #include "../../../Lib/RTree.h"
+#endif
+#ifdef _MEMORY_POOL_
+#include "../../../Lib/RTreeMemPool.h"
+#endif
+
 #include "../../../Lib/Rectangle.h"
 #include <iostream>
 #include <string>
@@ -7,8 +15,6 @@
 #include <fstream>
 #include <ctime>
 using namespace std;
-
-#define TESTNUM 5000
 
 struct Datainfo
 {
@@ -43,14 +49,12 @@ struct Pic
 
 struct Result
 {
-	double disktime;
-	double accur;
-	double recall;
-	Result(double _disktime, double _accur, double _recall)
+	double averageinserttime;
+	double averagedeletetime;
+	Result(double _av1, double _av2)
 	{
-		disktime = _disktime;
-		accur = _accur;
-		recall = _recall;
+		averageinserttime = _av1;
+		averagedeletetime = _av2;
 	}
 };
 
@@ -129,7 +133,7 @@ void initdata()
 		}
 		else
 		{
-			datainfo.classcount[classidcount-1]++;
+			datainfo.classcount[classidcount - 1]++;
 		}
 
 		Pic pic(idcount, filename, classname, classidcount, dim, dims);
@@ -140,81 +144,59 @@ void initdata()
 	datainfo.dim = dim;
 }
 
-
-bool _cdecl QueryResultCallback(Pic* a_data, vector<int>& resultid)
-{
-	resultid.push_back(a_data->id);
-	return true;
-}
-
-
-Result testRtree(int objnum,int range)
+Result testTime(int inserttime, int deletetime)
 {
 	rt.RemoveAll();
-	srand((unsigned int)time(nullptr));
-	set<int> chosenpics;
-	for (int i = 0; i < objnum; ++i)
+	srand((unsigned)time(nullptr));
+	float cmin[cdim], cmax[cdim];
+	clock_t start = clock();
+	vector<int> inserted;
+	inserted.reserve(inserttime);
+	for (int i = 0; i < inserttime; ++i)
 	{
-		int id = rand() % datainfo.datanum;
-		while (chosenpics.find(id) != chosenpics.end())
-		{
-			id = rand() % datainfo.datanum;
-		}
-		float cmin[cdim], cmax[cdim];
+		int id =rand() % datainfo.datanum;
 		for (int j = 0; j < cdim; ++j)
 		{
 			cmin[j] = cmax[j] = pics[id].dims[j];
 		}
 		rt.Insert(cmin, cmax, &pics[id]);
+		inserted[i] = id;
 	}
-	double alldisktime=0.0, allaccur=0.0, allrecall=0.0;
-	for (int i = 0; i < TESTNUM; ++i)
+	clock_t time1 = clock() - start;
+	for (int i = 0; i < inserttime; ++i)
 	{
-		vector<int> resultid;
-		int id = rand() % datainfo.datanum;
-		float cmin[cdim], cmax[cdim];
+		int p1 = rand() % inserttime;
+		int p2 = rand() % inserttime;
+		int temp = inserted[p1];
+		inserted[p1] = inserted[p2];
+		inserted[p2] = temp;
+	}
+	start = clock();
+	for (int i = 0; i < inserttime; ++i)
+	{
+		int id = inserted[i];
 		for (int j = 0; j < cdim; ++j)
 		{
-			cmin[j] = pics[id].dims[j] - range;
-			cmax[j] = pics[id].dims[j] + range;
-			if (pics[id].dims[j] - range < datainfo.minbound[j])
-				cmin[j] = datainfo.minbound[j];
-			if (pics[id].dims[j] + range > datainfo.maxbound[j])
-				cmax[j] = datainfo.maxbound[j];
+			cmin[j] = cmax[j] = pics[id].dims[j];
 		}
-		rt.Search(cmin, cmax, QueryResultCallback, resultid);
-		alldisktime += rt.disktime;
-		int allresult = resultid.size();
-		int hit = 0;
-		for (int k = 0; k < resultid.size(); ++k)
-		{
-			if (pics[resultid[k]-1].classid == pics[id].classid)
-			{
-				hit++;
-			}
-		}
-		if (allresult == 0)
-			continue;
-		allaccur += (static_cast<double>(hit) / allresult);
-		allrecall += (static_cast<double>(hit) / datainfo.classcount[pics[id].classid-1]);
+		rt.Remove(cmin, cmax, &pics[id]);
 	}
-	Result result(alldisktime / TESTNUM, allaccur / TESTNUM, allrecall / TESTNUM);
+	clock_t time2 = clock() - start;
+	Result result(static_cast<double>(time1) / inserttime, static_cast<double>(time2) / deletetime);
 	return result;
 }
 
 int main()
 {
+#ifdef _MEMORY_POOL_
+	cout << "Using Memory Pool" << endl;
+#endif
+#ifndef _MEMORY_POOL_
+	cout << "Not Using Memory Pool" << endl;
+#endif
 	initdata();
-	int range = 20;
-	int objnum[5] = { 1000,2000,3000,4000,5000 };
-	for (int i = 0; i < 5; ++i)
-	{
-		Result result = testRtree(objnum[i], range);
-		cout << "Dimension: " << cdim << endl;
-		cout << "Object number: " << objnum[i] << endl;
-		cout << "Average Disk Time: " << result.disktime << endl;
-		cout << "Average Accuracy: " << result.accur << endl;
-		cout << "Average Recall: " << result.recall << endl;
-	}
+	Result result = testTime(5000, 5000);
+	cout << "Average Insert Time: " << result.averageinserttime << "ms." << endl;
+	cout << "Average Delete Time: " << result.averagedeletetime << "ms." << endl;
 	return 0;
 }
