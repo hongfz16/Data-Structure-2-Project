@@ -60,8 +60,8 @@ Datainfo datainfo;
 const int cdim = 9;
 RTree<Pic*, float, cdim> rt;
 
-const string datafilename = "../../../Feature/ColorMoment/feature.txt";
-
+//const string datafilename = "../../../Feature/ColorMoment/feature.txt";
+const string datafilename = "../../../Feature/ColorHistogram/colorhist.txt";
 void initdata()
 {
 	int idcount = 0;
