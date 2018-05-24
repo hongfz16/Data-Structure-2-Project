@@ -1,0 +1,139 @@
+dnl
+dnl configure.in for HnSRTree
+dnl Copyright (C) 1997 Norio Katayama
+dnl
+dnl This library is free software; you can redistribute it and/or
+dnl modify it under the terms of the GNU Library General Public
+dnl License as published by the Free Software Foundation; either
+dnl version 2 of the License, or (at your option) any later version.
+dnl
+dnl This library is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+dnl Library General Public License for more details.
+dnl
+dnl You should have received a copy of the GNU Library General Public
+dnl License along with this library; if not, write to the Free
+dnl Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+dnl
+dnl $Id: configure.in,v 1.10 2003/06/11 09:02:04 katayama Exp $
+dnl
+
+AC_REVISION($Revision: 1.10 $)
+AC_INIT(HnObject/HnObject.cc)
+AC_CONFIG_HEADER(config.h)
+
+AC_ARG_ENABLE(debugging,
+              [  --disable-debugging     do not configure for debugging],
+	      ,enable_debugging=yes)
+if test "$enable_debugging" = yes; then
+    AC_DEFINE(DEBUGGING)
+fi
+
+CPPFLAGS="$CPPFLAGS -I\$(top_srcdir)/include"
+
+dnl Checks for programs.
+#
+# CC
+#
+if test -z "$CFLAGS"; then
+    NO_CFLAGS=yes
+fi
+AC_PROG_CC
+if test "$GCC" = yes; then
+    if test "$NO_CFLAGS" = yes; then
+        # override the default CFLAGS (-g -O) that is assigned by AC_PROG_CC.
+        if test "$enable_debugging" = yes; then
+            CFLAGS="-g -O -Wall -Winline"
+        else
+            CFLAGS="-O -Wall"
+        fi
+    fi
+    #
+    # The option `-ffloat-store' is required by `HnFPControl.h'.
+    # In addition, it is also required to obtain consistent result
+    # for floating-point computation.
+    #
+    CFLAGS="$CFLAGS -ffloat-store"
+fi
+#
+# CXX
+#
+if test -z "$CXXFLAGS"; then
+    NO_CXXFLAGS=yes
+fi
+AC_EGREP_CPP(yes,
+[#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 8)
+  yes
+#endif
+], gxx_optimize=yes, gxx_optmize=no)
+AC_PROG_CXX
+if test "$GXX" = yes; then
+    if test "$NO_CXXFLAGS" = yes; then
+        # override the default CXXFLAGS (-g -O) that is assigned by
+        # AC_PROG_CXX.
+        if test "$enable_debugging" = yes; then
+            CXXFLAGS="-g -Wall -Winline"
+        else
+            CXXFLAGS="-Wall"
+        fi
+        if test "$gxx_optimize" = yes; then
+            CXXFLAGS="$CXXFLAGS -O"
+        fi
+    fi   
+    #
+    # The option `-ffloat-store' is required by `HnFPControl.h'.
+    # In addition, it is also required to obtain consistent result
+    # for floating-point computation.
+    #
+    CXXFLAGS="$CXXFLAGS -ffloat-store"
+fi
+AC_PROG_INSTALL
+AC_PROG_RANLIB
+
+AC_CHECK_PROGS(PERL, perl, no)
+AC_SUBST(PERL)
+if test "$PERL" = no; then
+	AC_MSG_ERROR([cannot find 'perl'.])
+fi
+AC_PATH_PROGS(PERL_PATH, perl, no)
+AC_SUBST(PERL_PATH)
+if test "$PERL_PATH" = no; then
+	AC_MSG_ERROR([cannot find 'perl'.])
+fi
+
+dnl Checks for libraries.
+AC_CHECK_LIB(m, sqrt)
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS(nan.h)
+AC_CHECK_HEADERS(sys/time.h)
+AC_HEADER_TIME
+
+FPCONTROL=no
+AC_CHECK_HEADERS(ieeefp.h fpu_control.h, FPCONTROL=yes; break)
+if test "$FPCONTROL" = no; then
+	AC_MSG_ERROR([neither 'fpu_control.h' nor 'ieeefp.h' is found.]);
+fi
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_TYPE_OFF_T
+AC_TYPE_SIZE_T
+
+dnl Checks for library functions.
+AC_CHECK_FUNCS(memmove strerror)
+
+AC_OUTPUT(Makefile
+          include/Makefile
+          include/HnSRTree/Makefile
+	  HnObject/Makefile 
+	  HnRect/Makefile
+          HnSRTree/Makefile
+          lib/Makefile
+          c++-samples/Makefile
+          c-samples/Makefile,
+[
+# Makefile uses this timestamp file to record whether config.h is up to date.
+echo 'configure.in translit($Revision: 1.10 $, $")' > stamp-h])
+

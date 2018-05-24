@@ -1,0 +1,886 @@
+#!/usr/local/bin/perl
+#
+# obj2ptr
+# Copyright (C) 1997 Norio Katayama
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the Free
+# Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+# 06/08/96 katayama@rd.nacsis.ac.jp
+# $Id: obj2ptr,v 1.12 2010/03/09 03:14:42 katayama Exp $
+#
+
+$hdrPrefix = "HnSRTree/";
+
+($program = $0) =~ s|^.*/||;
+
+$usage = <<"EOF";
+Usage: $program objHdrFile
+EOF
+    ;
+
+if ( @ARGV != 1 ) {
+    die $usage;
+}
+$objHdrFile = $ARGV[0];
+
+#
+# obtain class names
+#
+
+($objClass = $objHdrFile) =~ s|^.*/||;
+$objClass =~ s|\.[^\.]+$||;
+
+unless ( ($ptrHdrFile = $objHdrFile) =~ s/Obj\.hh/.hh/ ) {
+    die("${program}: object header file name must end with `Obj.hh', stopped");
+}
+($ptrSrcFile = $ptrHdrFile) =~ s/\.hh/\.cc/;
+($ptrClass = $ptrHdrFile) =~ s|^.*/||;
+$ptrClass =~ s|\.[^\.]+$||;
+
+#
+# obtain public fields
+#
+
+open(HANDLE, $objHdrFile) ||
+    die("${program}: cannot open `$objHdrFile'.\n");
+
+while ( <HANDLE> ) {
+    s/\n$//;
+    if ( /^class\s+$objClass[\s:]/ ) {
+	#
+	# obtain super class
+	#
+	s/^class\s+$objClass\s*:\s*//;
+	if ( /^public\s+([A-Za-z_][A-Za-z_0-9]*)\s+\{$/ ) {
+	    $objSuperClass = $1;
+	    if ( $objSuperClass eq "HnObject" ) {
+		$ptrSuperClass = 'HnPointer';
+	    }
+	    elsif ( $objSuperClass =~ /^(.*)Obj$/ ) {
+		$ptrSuperClass = $1;
+	    }
+	    else {
+		die("${program}: unexpected super class `$objSuperClass', ".
+		    "stopped");
+	    }
+	}
+	&parseClass;
+    }
+    elsif ( /^\/\*\{$/ ) {
+	if ( !defined($objSuperClass) ) {
+	    &getPreamble;
+	}
+	else {
+	    &getAppendix;
+	}
+    }
+}
+
+close(HANDLE);
+
+&generateHdrFile;
+&generateSrcFile;
+
+exit 0;
+
+#
+# get preamble
+#
+
+sub getPreamble {
+    while ( <HANDLE> ) {
+	s/\n$//;
+	if ( /^\}\*\/$/ ) {
+	    return 1;
+	}
+	else {
+	    push(@preambles, $_);
+	}
+    }
+
+    die("${program}: cannot find the end of the preamble, stopped");
+}
+
+#
+# get appendix
+#
+
+sub getAppendix {
+    while ( <HANDLE> ) {
+	s/\n$//;
+	if ( /^\}\*\/$/ ) {
+	    return 1;
+	}
+	else {
+	    push(@appendices, $_);
+	}
+    }
+
+    die("${program}: cannot find the end of the appendix, stopped");
+}
+
+#
+# parse class
+#
+
+sub parseClass {
+    local($inPublic);
+
+    while ( <HANDLE> ) {
+	s/\n$//;
+	if ( /^public:$/ ) {
+	    $inPublic = 1;
+	}
+	elsif ( /^private:$/ ) {
+	    $inPublic = 0;
+	}
+	elsif ( /^\};$/ ) {
+	    return 1;
+	}
+	elsif ( $inPublic ) {
+	    if ( /^\s*$objClass\s*\(/ ) {
+		&getConstructor;
+	    }
+	    elsif ( /\(/ ) {
+		&getFunction;
+	    }
+	    elsif ( /^\/\*\{$/ ) {
+		&getEmbedded;
+	    }
+	    else {
+		push(@fields, $_);
+	    }
+	}
+    }
+
+    die("${program}: cannot find the end of the class definition, stopped");
+}
+
+#
+# get constructor
+#
+
+sub getConstructor {
+    # find close parenthesis
+    while ( !/\)/ ) {
+	push(@fields, $_);
+	$_ = <HANDLE>;
+	s/\n$//;
+    }
+
+    s/([^\)]*\))\s*//;
+    push(@fields, "$1;");
+
+    # find open brace or semi-colon
+    while ( !/\{/ && !/;/ ) {
+	$_ = <HANDLE>;
+	s/\n$//;
+    }
+
+    #
+    # remove inline
+    #
+    if ( /\{/ ) {
+	# find balanced close brace
+	do {
+	    if ( s/^[^\{\}]*\{[^\{\}]*// ) {
+		$level ++;
+	    }
+	    elsif ( s/^[^\{\}]*\}[^\{\}]*// ) {
+		$level --;
+	    }
+	    else {
+		$_ .= <HANDLE>;
+		s/\n$//;
+	    }
+	} while ( $level != 0 );
+    }
+}
+
+#
+# get function 
+#
+
+sub getFunction {
+    # remove the keyword `virtual'
+    s/^(\s*)virtual\s+/$1/;
+
+    # find close parenthesis
+    while ( !/\)/ ) {
+	push(@fields, $_);
+	$_ = <HANDLE>;
+	s/\n$//;
+    }
+
+    # remove the pure specifier
+    s/\)\s*=\s*0\s*;/);/;
+
+    # find open brace or semi-colon
+    while ( !/\{/ && !/;/ ) {
+	push(@fields, $_);
+	$_ = <HANDLE>;
+	s/\n$//;
+    }
+    #
+    # remove inline
+    #
+    if ( /\{/ ) {
+	s/([^\{]+)\s+\{/\{/;
+	push(@fields, "$1;");
+
+	# find balanced close brace
+	do {
+	    if ( s/^[^\{\}]*\{[^\{\}]*// ) {
+		$level ++;
+	    }
+	    elsif ( s/^[^\{\}]*\}[^\{\}]*// ) {
+		$level --;
+	    }
+	    else {
+		$_ .= <HANDLE>;
+		s/\n$//;
+	    }
+	} while ( $level != 0 );
+    }
+    else {
+	push(@fields, $_);
+    }
+}
+
+#
+# get embedded
+#
+
+sub getEmbedded {
+    while ( <HANDLE> ) {
+	s/\n$//;
+	if ( /^\}\*\/$/ ) {
+	    return 1;
+	}
+	else {
+	    push(@embedded, $_);
+	}
+    }
+
+    die("${program}: ".
+	"cannot find the end of the embedded declaration, stopped");
+}
+
+#
+# generate header file
+#
+
+sub generateHdrFile {
+    local(@fields) = @fields;
+    local($sec, $min, $hour, $mday, $mon, $year) = (localtime)[0..5];
+    local($when) = sprintf("%04d/%02d/%02d %02d:%02d:%02d",
+			   $year + 1900, $mon + 1, $mday, $hour, $min, $sec);
+
+    open(HANDLE, ">$ptrHdrFile") ||
+	die("${program}: cannot open `$ptrHdrFile', stopped");
+
+    print HANDLE <<"EOF";
+/*
+ * $ptrHdrFile
+ *
+ * DO NOT EDIT THIS FILE!
+ *
+ * This file is automatically generated by $program.
+ * $when
+ */
+
+#ifndef _${ptrClass}_hh
+#define _${ptrClass}_hh
+
+#ifndef _HNSRTIMP
+#ifdef _MSC_VER
+#define _HNSRTIMP _declspec(dllimport)
+#else
+#define _HNSRTIMP
+#endif
+#endif
+
+#include "${hdrPrefix}$ptrSuperClass.hh"
+
+EOF
+
+    if ( @preambles ) {
+	foreach ( @preambles ) {
+	    print HANDLE $_, "\n";
+	}
+	print HANDLE "\n";
+    }
+
+    print HANDLE <<"EOF";
+/*
+ * $ptrClass
+ */
+
+class $objClass;
+
+class _HNSRTIMP ${ptrClass}: public $ptrSuperClass {
+private:
+    friend class $objClass;
+    $ptrClass(const $objClass *ptr) {
+	HnPointer::assign((HnObject *)ptr);
+    }
+    $objClass *getObject(void) const {
+	return ($objClass *)HnPointer::getObject();
+    }
+public:
+    static const $ptrClass null;
+    $ptrClass(void) {}
+public:
+EOF
+
+    if ( @embedded != 0 ) {
+	foreach ( @embedded ) {
+	    print HANDLE $_, "\n";
+	}
+	print HANDLE "\n";
+    }
+
+    $inConstructor = 0;
+    foreach ( @fields ) {
+	if ( /^(\s*)$objClass\s*(\(.*)$/ ) {
+            #
+	    # print the 'friend' declaration for the constructors.
+            #
+            $leading = $1;
+            $remainder = $2;
+
+            # remove default values for the 'friend' declaration.
+            $remainder =~ s/\s*=\s*[^,\)]+//g;
+
+	    print HANDLE ("    friend _HNSRTIMP $ptrClass\n".
+			  "${leading}new_$ptrClass${remainder}\n");
+
+            $inConstructor = 1;
+	}
+	elsif ( /^\s*~$objClass\s*\(/ ) {
+	    # ignore destructor
+	}
+	else {
+            # normal function declaration or succeeding parameter definitions.
+            if ( $inConstructor ) {
+                # remove default values for the 'friend' declaration.
+                s/\s*=\s*[^,\)]+//g;
+            }
+	    print HANDLE $_, "\n";
+	}
+
+        # find semi-colon, i.e., the end of declaration.
+        if ( /\)\s*;/ ) {
+            $inConstructor = 0;
+        }
+    }
+
+    #
+    # print closing brace for the class definition
+    #
+				
+    print HANDLE <<"EOF";
+};
+
+EOF
+
+    #
+    # print constructors
+    #
+    $inConstructor = 0;
+    foreach ( @fields ) {
+	if ( /^(\s*)$objClass\s*(\(.*)$/ ) {
+            #
+	    # constructor
+            #
+	    print HANDLE ("_HNSRTIMP $ptrClass\n".
+			  "${1}new_$ptrClass${2}\n");
+            $inConstructor = 1;
+	}
+        elsif ( $inConstructor ) {
+            # succeeding parameter definitions.
+            print HANDLE $_, "\n";
+        }
+
+        # find semi-colon, i.e., the end of declaration.
+        if ( /\)\s*;/ ) {
+            $inConstructor = 0;
+        }
+    }
+    print HANDLE "\n";
+
+    #
+    # print stubs
+    #
+
+    if ( $ptrClass ne "HnString" ) {
+	print HANDLE <<"EOF";
+#include "${hdrPrefix}HnString.hh"
+
+EOF
+    }
+
+    print HANDLE <<"EOF";
+#define HnClass $ptrClass
+#include "${hdrPrefix}HnClassArray.hh"
+
+#include "${hdrPrefix}$objHdrFile"
+
+EOF
+
+    while ( @fields ) {
+	# remove comment
+	$_ = shift(@fields);
+	next if ( /\/\// );
+	if ( /\/\*/ ) {
+	    while ( !/\*\// ) {
+		$_ = shift(@fields);
+	    }
+	    $_ = shift(@fields);
+	}
+
+	# find open parenthesis
+	if ( /\(/ ) {
+	    # find close parenthesis
+	    while ( !/\)/ ) {
+		$_ .= shift(@fields);
+	    }
+
+	    # find semi-colon
+	    while ( !/;/ ) {
+		$_ .= shift(@fields);
+	    }
+
+	    &generateHdrStub($_);
+	}
+    }
+
+    #
+    # print appendices
+    #
+
+    if ( @appendices ) {
+	foreach ( @appendices ) {
+	    print HANDLE $_, "\n";
+	}
+	print HANDLE "\n";
+    }
+
+    #
+    # print closing #endif
+    # 
+
+    print HANDLE <<"EOF";
+
+#endif /* _${ptrClass}_hh */
+EOF
+
+    close(HANDLE);
+
+    1;
+}
+
+#
+# generate source file
+#
+
+sub generateSrcFile {
+    local(@fields) = @fields;
+    local($sec, $min, $hour, $mday, $mon, $year) = (localtime)[0..5];
+    local($when) = sprintf("%04d/%02d/%02d %02d:%02d:%02d",
+			   $year + 1900, $mon + 1, $mday, $hour, $min, $sec);
+
+    open(HANDLE, ">$ptrSrcFile") ||
+	die("$program: cannot open `$ptrSrcfile', stopped");
+
+    print HANDLE <<"EOF";
+/*
+ * $ptrSrcFile
+ *
+ * DO NOT EDIT THIS FILE!
+ *
+ * This file is automatically generated by $program.
+ * $when
+ */
+
+#include "${hdrPrefix}$ptrHdrFile"
+#include "${hdrPrefix}$objHdrFile"
+
+/*
+ * $ptrClass
+ */
+
+const $ptrClass ${ptrClass}::null;
+
+EOF
+    ;
+
+    #
+    # print stubs
+    #
+
+    while ( @fields ) {
+	# remove comment
+	$_ = shift(@fields);
+	next if ( /\/\// );
+	if ( /\/\*/ ) {
+	    while ( !/\*\// ) {
+		$_ = shift(@fields);
+	    }
+	    $_ = shift(@fields);
+	}
+
+	# find open parenthesis
+	if ( /\(/ ) {
+	    # find close parenthesis
+	    while ( !/\)/ ) {
+		$_ .= shift(@fields);
+	    }
+
+	    # find semi-colon
+	    while ( !/;/ ) {
+		$_ .= shift(@fields);
+	    }
+
+	    &generateSrcStub($_);
+	}
+    }
+
+    print HANDLE <<"EOF";
+#define HnClass $ptrClass
+#include "${hdrPrefix}HnClassArray.cc"
+
+EOF
+    ;
+
+    close(HANDLE);
+
+    1;
+}
+
+#
+# parse function
+#
+
+sub parseFunction {
+    if ( @_ != 1 ) {
+	die("${program}: parseFunction() requires one argument, stopped");
+    }
+    $_ = @_[0];
+
+    # return type and method name
+    if ( s/\s*([^\(]*[^A-Za-z_~])(operator[^A-Za-z_~\(][^\(]*)\(// ) {
+	$returnType = $1;
+	$methodName = $2;
+	$returnType =~ s/\s*$//;
+	$methodName =~ s/\s*$//;
+    }
+    elsif ( s/\s*([^\(]*[^A-Za-z_0-9~])([A-Za-z_~][A-Za-z_0-9]*)\s*\(// ) {
+	$returnType = $1;
+	$methodName = $2;
+	$returnType =~ s/\s*$//;
+	$methodName =~ s/\s*$//;
+    }
+    else {
+	die("${program}: cannot find function name at `$_', stopped");
+    }
+
+    # parameters
+    @params = ();
+    while ( s/\s*([^,\)]+),// ) {
+	push(@params, $1);
+    }
+    unless ( s/\s*([^,\)]+)\)// ) {
+	die("${program}: cannot find parameter list at `$_', stopped");
+    }
+    push(@params, $1);
+
+    # qualifier
+    if ( s/\s*([^\s].*)\s*;// ) {
+	$qualifier = $1;
+    }
+
+    # variables
+    if ( @params == 1 && $params[0] eq "void" ) {
+	@variables = ();
+    }
+    else {
+	@variables = ();
+	foreach ( @params ) {
+	    if(/[^=]*[^A-Za-z_\d~]([A-Za-z_~][A-Za-z_\d]*)(\[\])?\s*(=.*)?$/) {
+		push(@variables, $1);
+	    }
+	    else {
+		die("${program}: cannot find variable at `$_', stopped");
+	    }
+	}
+    }
+}
+
+#
+# generate header stub
+#
+
+sub generateHdrStub {
+    if ( @_ != 1 ) {
+	die("${program}: generateHdrStub() requires one argument, stopped");
+    }
+    local($returnType, $methodName, $qualifier);
+
+    &parseFunction(@_[0]);
+
+    if ( $methodName eq "$objClass" ) {
+	# ignore
+    }
+    elsif ( $methodName eq "~$objClass" ) {
+	# ignore
+    }
+    elsif ( $methodName eq "equals" ) {
+	&generateEqualsStub;
+    }
+    elsif ( $methodName eq "toString" &&
+	    (@params == 1 && $params[0] eq "void") ) {
+	&generateToStringStub;
+    }
+    elsif ( $methodName =~ /^operator/ ) {
+	&generateOperatorStub;
+    }
+    elsif ( $returnType =~ s/^static\s+// ) {
+	&generateClassMethodStub;
+    }
+    else {
+	&generateNormalStub;
+    }
+}
+
+#
+# generate source stub
+#
+
+sub generateSrcStub {
+    if ( @_ != 1 ) {
+	die("${program}: generateSrcStub() requires one argument, stopped");
+    }
+    local($returnType, $methodName, $qualifier);
+
+    &parseFunction(@_[0]);
+
+    if ( $methodName eq "$objClass" ) {
+	&generateConstructorStub;
+    }
+    else {
+	# ignore
+    }
+}
+
+#
+# generate constructor stub
+#
+
+sub generateConstructorStub {
+    print HANDLE "$ptrClass\n";
+    print HANDLE "new_$ptrClass(";
+    for ( $i=0; $i<@params; $i++ ) {
+	print HANDLE ", " if ( $i != 0 );
+
+	# remove default argument
+	($param = $params[$i]) =~ s/\s*=.*$//;
+	print HANDLE $param;
+    }
+    print HANDLE ")\n";
+    print HANDLE "{\n";
+    print HANDLE "    $objClass *_obj;\n";
+    print HANDLE "\n";
+    print HANDLE "    _obj = new $objClass(";
+    for ( $i=0; $i<@variables; $i++ ) {
+	print HANDLE ", " if ( $i != 0 );
+	print HANDLE $variables[$i];
+    }
+    print HANDLE ");\n";
+    print HANDLE "\n";
+    print HANDLE "    if ( _obj->hasConstructorFailed() ) {\n";
+    print HANDLE "        delete _obj;\n";
+    print HANDLE "        return ($objClass *)NULL;\n";
+    print HANDLE "    }\n";
+    print HANDLE "\n";
+    print HANDLE "    return _obj;\n";
+    print HANDLE "}\n";
+    print HANDLE "\n";
+}
+
+#
+# generate equals stub
+#
+
+sub generateEqualsStub {
+    if ( $returnType ne "HnBool" ) {
+	die("${program}: the return type of equals() must be HnBool, stopped");
+    }
+    if ( @params != 1 || !($params[0] =~ /const $ptrClass &$variables[0]/) ) {
+	die("${program}: the parameter type of equals() must be ".
+	    "`const $ptrClass &', stopped");
+    }
+    print HANDLE "inline ";
+    print HANDLE <<"EOF";
+HnBool
+${ptrClass}::equals(const $ptrClass &ptr) const {
+    if ( isInvalid() ) {
+	if ( ptr.isInvalid() ) {
+	    return HnTRUE;
+	}
+	else {
+	    return HnFALSE;
+	}
+    }
+    else {
+	if ( ptr.isInvalid() ) {
+	    return HnFALSE;
+	}
+	else {
+	    return getObject()->equals(ptr);
+	}
+    }
+}
+
+EOF
+}
+
+#
+# generate toString stub
+#
+
+sub generateToStringStub {
+    if($returnType ne "HnString") {
+	die("${program}: the return type of toString() must be HnString, ".
+	    "stopped");
+    }
+    if(@params != 1 || !($params[0] eq "void")) {
+	die("${program}: the paramter of toString() must be `void', stopped");
+    }
+    print HANDLE <<"EOF";
+inline HnString
+${ptrClass}::toString(void) const {
+    if ( isInvalid() ) {
+	return "${ptrClass}::null";
+    }
+    else {
+	return getObject()->toString();
+    }
+}
+
+EOF
+    ;
+}
+
+#
+# generate normal stub
+#
+
+sub generateNormalStub {
+    print HANDLE "inline ";
+    print HANDLE "$returnType\n";
+    print HANDLE "${ptrClass}::${methodName}(";
+    for ( $i=0; $i<@params; $i++ ) {
+	print HANDLE ", " if ( $i != 0 );
+
+	# remove default argument
+	($param = $params[$i]) =~ s/\s*=.*$//;
+	print HANDLE $param;
+    }
+    print HANDLE ")";
+    print HANDLE " $qualifier" if ( $qualifier );
+    print HANDLE "\n";
+    print HANDLE "{\n";
+    if ( $returnType eq "void" ) {
+	print HANDLE "    ";
+    }
+    else {
+	print HANDLE "    return ";
+    }   
+    print HANDLE "getObject()->${methodName}(";
+    for ( $i=0; $i<@variables; $i++ ) {
+	print HANDLE ", " if ( $i != 0 );
+	print HANDLE $variables[$i];
+    }
+    print HANDLE ");\n";
+    print HANDLE "}\n";
+    print HANDLE "\n";
+}
+
+#
+# generate operator stub
+#
+
+sub generateOperatorStub {
+    print HANDLE "inline ";
+    if ( "$returnType" ne "" ) {
+	print HANDLE "$returnType\n";
+    }
+    print HANDLE "${ptrClass}::${methodName}(";
+    for ( $i=0; $i<@params; $i++ ) {
+	print HANDLE ", " if ( $i != 0 );
+	print HANDLE $params[$i];
+    }
+    print HANDLE ")";
+    print HANDLE " $qualifier" if ( $qualifier );
+    print HANDLE "\n";
+    print HANDLE "{\n";
+    if ( $returnType eq "void" ) {
+	print HANDLE "    ";
+    }
+    else {
+	print HANDLE "    return ";
+    }   
+    print HANDLE "getObject()->${methodName}(";
+    for ( $i=0; $i<@variables; $i++ ) {
+	print HANDLE ", " if ( $i != 0 );
+	print HANDLE $variables[$i];
+    }
+    print HANDLE ");\n";
+    print HANDLE "}\n";
+    print HANDLE "\n";
+}
+
+#
+# generate class method stub
+#
+
+sub generateClassMethodStub {
+    print HANDLE "inline ";
+    print HANDLE "$returnType\n";
+    print HANDLE "${ptrClass}::${methodName}(";
+    for ( $i=0; $i<@params; $i++ ) {
+	print HANDLE ", " if ( $i != 0 );
+	print HANDLE $params[$i];
+    }
+    print HANDLE ")";
+    print HANDLE " $qualifier" if ( $qualifier );
+    print HANDLE "\n";
+    print HANDLE "{\n";
+    if ( $returnType eq "void" ) {
+	print HANDLE "    ";
+    }
+    else {
+	print HANDLE "    return ";
+    }   
+    print HANDLE "${objClass}::${methodName}(";
+    for ( $i=0; $i<@variables; $i++ ) {
+	print HANDLE ", " if ( $i != 0 );
+	print HANDLE $variables[$i];
+    }
+    print HANDLE ");\n";
+    print HANDLE "}\n";
+    print HANDLE "\n";
+}
