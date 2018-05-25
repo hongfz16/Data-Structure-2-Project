@@ -9,7 +9,8 @@
 using namespace std;
 
 #define TESTNUM 5000
-#define MULT 20
+#define MULT 1
+const int cdim = 9;
 
 struct Datainfo
 {
@@ -75,8 +76,73 @@ struct Result
 	}
 };
 
-const int cdim = 15;
 RTree<Pic*, double, cdim> rt;
+
+void initProvidedData(vector<Pic>& pics, Datainfo& datainfo, string datafilename, string datainfofilename)
+{
+	ifstream infofin(datainfofilename);
+	ifstream datafin(datafilename);
+	int idcount = 0;
+	int classidcount = 0;
+	int dim = 9;
+	string line, filename, classname;
+	vector<double> dims;
+	set<string> classnames;
+	getline(datafin, line);
+	getline(datafin, line);
+	datainfo.minbound.resize(dim, INT_MAX);
+	datainfo.maxbound.resize(dim, 0);
+	while (getline(infofin, filename))
+	{
+		getline(datafin, line);
+		classname.clear();
+		dims.clear();
+		int linecount = 0;
+		for (; line[linecount] != ' '; ++linecount);
+		for (int i = 0; i < dim; ++i)
+		{
+			int tempdim = 0;
+			for (++linecount; linecount < line.size(); ++linecount)
+			{
+				if (line[linecount] != ' ')
+				{
+					tempdim *= 10;
+					tempdim += line[linecount] - '0';
+				}
+				else
+				{
+					break;
+				}
+			}
+			dims.push_back(static_cast<double>(tempdim) / MULT);
+			if (static_cast<double>(tempdim) / MULT > datainfo.maxbound[i])
+				datainfo.maxbound[i] = static_cast<double>(tempdim) / MULT;
+			if (static_cast<double>(tempdim) / MULT < datainfo.minbound[i])
+				datainfo.minbound[i] = static_cast<double>(tempdim) / MULT;
+		}
+		for (int i = 0; filename[i] != '_'; ++i)
+		{
+			classname += filename[i];
+		}
+		++idcount;
+		if (classnames.find(classname) == classnames.end())
+		{
+			classnames.insert(classname);
+			++classidcount;
+			datainfo.classcount.push_back(1);
+		}
+		else
+		{
+			datainfo.classcount[classidcount - 1]++;
+		}
+
+		Pic pic(idcount, filename, classname, classidcount, dim, dims);
+		pics.push_back(pic);
+	}
+	datainfo.classnum = classidcount;
+	datainfo.datanum = idcount;
+	datainfo.dim = dim;
+}
 
 void initdata(vector<Pic>& pics, Datainfo& datainfo, string datafilename)
 {
@@ -235,29 +301,32 @@ void printcsv(vector<double>& vec)
 int main()
 {
 	const string data1filename = "../../../Feature/ColorMoment/feature.txt";
+	const string prodatafilename = "../../../Feature/ProvidedFeature/color_feature.txt";
+	const string imagelistfilename = "../../../Feature/ProvidedFeature/imagelist.txt";
 	const string data2filename = "../../../Feature/ColorHistogram/colorhist_15dim.txt";
 	vector<Pic> pics_colormoment;
 	vector<Pic> pics_colorhisto;
 	Datainfo datainfo1;
 	Datainfo datainfo2;
-	initdata(pics_colormoment, datainfo1, data1filename);
+	//initdata(pics_colormoment, datainfo1, data1filename);
+	initProvidedData(pics_colormoment, datainfo1, prodatafilename, imagelistfilename);
 	initdata(pics_colorhisto, datainfo2, data2filename);
 	int objnum = datainfo2.datanum;
-	double range = 20;
+	double range = 0;
 	vector<double> rangevec, accvec, callbackvec, resultnumvec;
-	for (int i = 0; i < 60; ++i, range += 80)
+	for (int i = 0; i < 60; ++i, range += 50)
 	{
-		//Result result1 = testRtree(objnum, range, pics_colormoment, datainfo1);
 		cout << "Query Range: " << range << endl;
-		//cout << "Color Moment Features result:" << endl;
-		//cout << "Accuracy: " << result1.accur << endl;
-		//cout << "Call Back: " << result1.recall << endl;
-		//cout << "Result Number: " << result1.resultnum << endl;
-		//rangevec.push_back(range);
-		//accvec.push_back(result1.accur);
-		//callbackvec.push_back(result1.recall);
-		//resultnumvec.push_back(result1.resultnum);
-		Result result2 = testRtree(objnum, range, pics_colorhisto, datainfo2);
+		Result result1 = testRtree(objnum, range, pics_colormoment, datainfo1);
+		cout << "Color Moment Features result:" << endl;
+		cout << "Accuracy: " << result1.accur << endl;
+		cout << "Call Back: " << result1.recall << endl;
+		cout << "Result Number: " << result1.resultnum << endl;
+		rangevec.push_back(range);
+		accvec.push_back(result1.accur);
+		callbackvec.push_back(result1.recall);
+		resultnumvec.push_back(result1.resultnum);
+		/*Result result2 = testRtree(objnum, range, pics_colorhisto, datainfo2);
 		cout << "Color Histogram Features result:" << endl;
 		cout << "Accuracy: " << result2.accur << endl;
 		cout << "Call Back: " << result2.recall << endl;
@@ -265,7 +334,7 @@ int main()
 		rangevec.push_back(range);
 		accvec.push_back(result2.accur);
 		callbackvec.push_back(result2.recall);
-		resultnumvec.push_back(result2.resultnum);
+		resultnumvec.push_back(result2.resultnum);*/
 		cout << "====================" << endl;
 	}
 	cout << "Range: " << endl;
