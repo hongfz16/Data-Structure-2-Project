@@ -75,7 +75,7 @@ struct Result
 	}
 };
 
-const int cdim = 24;
+const int cdim = 15;
 RTree<Pic*, double, cdim> rt;
 
 void initdata(vector<Pic>& pics, Datainfo& datainfo, string datafilename)
@@ -235,7 +235,7 @@ void printcsv(vector<double>& vec)
 int main()
 {
 	const string data1filename = "../../../Feature/ColorMoment/feature.txt";
-	const string data2filename = "../../../Feature/ColorHistogram/colorhist.txt";
+	const string data2filename = "../../../Feature/ColorHistogram/colorhist_15dim.txt";
 	vector<Pic> pics_colormoment;
 	vector<Pic> pics_colorhisto;
 	Datainfo datainfo1;
@@ -243,7 +243,7 @@ int main()
 	initdata(pics_colormoment, datainfo1, data1filename);
 	initdata(pics_colorhisto, datainfo2, data2filename);
 	int objnum = datainfo2.datanum;
-	double range = 100;
+	double range = 20;
 	vector<double> rangevec, accvec, callbackvec, resultnumvec;
 	for (int i = 0; i < 60; ++i, range += 80)
 	{
