@@ -9,14 +9,16 @@
 using namespace std;
 
 #define TESTNUM 5000
+#define MULT 20
+const int cdim = 24;
 
 struct Datainfo
 {
 	int datanum;
 	int classnum;
 	int dim;
-	vector<int> minbound;
-	vector<int> maxbound;
+	vector<double> minbound;
+	vector<double> maxbound;
 	vector<int> classcount;
 };
 
@@ -27,10 +29,10 @@ struct Pic
 	string classname;
 	int classid;
 	int dim;
-	vector<int> dims;
+	vector<double> dims;
 
 	Pic(int _id, string _filename, string _classname,
-		int _classid, int _dim, vector<int> _dims)
+		int _classid, int _dim, vector<double> _dims)
 	{
 		id = _id;
 		filename = _filename;
@@ -46,19 +48,20 @@ struct Result
 	double disktime;
 	double accur;
 	double recall;
-	Result(double _disktime, double _accur, double _recall)
+	double resultnum;
+	Result(double _disktime, double _accur, double _recall, double _resultnum)
 	{
 		disktime = _disktime;
 		accur = _accur;
 		recall = _recall;
+		resultnum = _resultnum;
 	}
 };
 
 vector<Pic> pics;
 Datainfo datainfo;
 
-const int cdim = 9;
-RTree<Pic*, float, cdim> rt;
+RTree<Pic*, double, cdim> rt;
 
 //const string datafilename = "../../../Feature/ColorMoment/feature.txt";
 const string datafilename = "../../../Feature/ColorHistogram/colorhist.txt";
@@ -69,7 +72,7 @@ void initdata()
 	int dim = 0;
 	ifstream fin(datafilename);
 	string line, filename, classname;
-	vector<int> dims;
+	vector<double> dims;
 	set<string> classnames;
 	getline(fin, line);
 	for (int i = 0; i < line.size(); ++i)
@@ -101,7 +104,7 @@ void initdata()
 		}
 		for (int i = 0; i < dim; ++i)
 		{
-			int tempdim = 0;
+			double tempdim = 0;
 			for (++linecount; linecount < line.size(); ++linecount)
 			{
 				if (line[linecount] != ' ')
@@ -114,6 +117,7 @@ void initdata()
 					break;
 				}
 			}
+			tempdim /= MULT;
 			dims.push_back(tempdim);
 			if (tempdim > datainfo.maxbound[i])
 				datainfo.maxbound[i] = tempdim;
@@ -160,19 +164,19 @@ Result testRtree(int objnum,int range)
 		{
 			id = rand() % datainfo.datanum;
 		}
-		float cmin[cdim], cmax[cdim];
+		double cmin[cdim], cmax[cdim];
 		for (int j = 0; j < cdim; ++j)
 		{
 			cmin[j] = cmax[j] = pics[id].dims[j];
 		}
 		rt.Insert(cmin, cmax, &pics[id]);
 	}
-	double alldisktime=0.0, allaccur=0.0, allrecall=0.0;
+	double alldisktime=0.0, allaccur=0.0, allrecall=0.0, resultnum = 0.0;
 	for (int i = 0; i < TESTNUM; ++i)
 	{
 		vector<int> resultid;
 		int id = rand() % datainfo.datanum;
-		float cmin[cdim], cmax[cdim];
+		double cmin[cdim], cmax[cdim];
 		for (int j = 0; j < cdim; ++j)
 		{
 			cmin[j] = pics[id].dims[j] - range;
@@ -186,6 +190,7 @@ Result testRtree(int objnum,int range)
 		alldisktime += rt.disktime;
 		int allresult = resultid.size();
 		int hit = 0;
+		resultnum += allresult;
 		for (int k = 0; k < resultid.size(); ++k)
 		{
 			if (pics[resultid[k]-1].classid == pics[id].classid)
@@ -198,14 +203,14 @@ Result testRtree(int objnum,int range)
 		allaccur += (static_cast<double>(hit) / allresult);
 		allrecall += (static_cast<double>(hit) / datainfo.classcount[pics[id].classid-1]);
 	}
-	Result result(alldisktime / TESTNUM, allaccur / TESTNUM, allrecall / TESTNUM);
+	Result result(alldisktime / TESTNUM, allaccur / TESTNUM, allrecall / TESTNUM, resultnum / TESTNUM);
 	return result;
 }
 
 int main()
 {
 	initdata();
-	int range = 20;
+	int range = 500;
 	int objnum[5] = { 1000,2000,3000,4000,5000 };
 	for (int i = 0; i < 5; ++i)
 	{
@@ -213,8 +218,7 @@ int main()
 		cout << "Dimension: " << cdim << endl;
 		cout << "Object number: " << objnum[i] << endl;
 		cout << "Average Disk Time: " << result.disktime << endl;
-		cout << "Average Accuracy: " << result.accur << endl;
-		cout << "Average Recall: " << result.recall << endl;
+		cout << "Average Result Number: " << result.resultnum << endl;
 	}
 	return 0;
 }
