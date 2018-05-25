@@ -9,14 +9,15 @@
 using namespace std;
 
 #define TESTNUM 5000
+#define MULT 20
 
 struct Datainfo
 {
 	int datanum;
 	int classnum;
 	int dim;
-	vector<int> minbound;
-	vector<int> maxbound;
+	vector<double> minbound;
+	vector<double> maxbound;
 	vector<int> classcount;
 };
 
@@ -27,10 +28,10 @@ struct Pic
 	string classname;
 	int classid;
 	int dim;
-	vector<int> dims;
+	vector<double> dims;
 
 	Pic(int _id, string _filename, string _classname,
-		int _classid, int _dim, vector<int> _dims)
+		int _classid, int _dim, vector<double> _dims)
 	{
 		id = _id;
 		filename = _filename;
@@ -64,16 +65,18 @@ struct Result
 	double disktime;
 	double accur;
 	double recall;
-	Result(double _disktime, double _accur, double _recall)
+	double resultnum;
+	Result(double _disktime, double _accur, double _recall, double _resultnum)
 	{
 		disktime = _disktime;
 		accur = _accur;
 		recall = _recall;
+		resultnum = _resultnum;
 	}
 };
 
-const int cdim = 7;
-RTree<Pic*, float, cdim> rt;
+const int cdim = 24;
+RTree<Pic*, double, cdim> rt;
 
 void initdata(vector<Pic>& pics, Datainfo& datainfo, string datafilename)
 {
@@ -82,7 +85,7 @@ void initdata(vector<Pic>& pics, Datainfo& datainfo, string datafilename)
 	int dim = 0;
 	ifstream fin(datafilename);
 	string line, filename, classname;
-	vector<int> dims;
+	vector<double> dims;
 	set<string> classnames;
 	getline(fin, line);
 	for (int i = 0; i < line.size(); ++i)
@@ -127,11 +130,11 @@ void initdata(vector<Pic>& pics, Datainfo& datainfo, string datafilename)
 					break;
 				}
 			}
-			dims.push_back(tempdim);
-			if (tempdim > datainfo.maxbound[i])
-				datainfo.maxbound[i] = tempdim;
-			if (tempdim < datainfo.minbound[i])
-				datainfo.minbound[i] = tempdim;
+			dims.push_back(static_cast<double>(tempdim)/MULT);
+			if (static_cast<double>(tempdim) / MULT > datainfo.maxbound[i])
+				datainfo.maxbound[i] = static_cast<double>(tempdim) / MULT;
+			if (static_cast<double>(tempdim) / MULT < datainfo.minbound[i])
+				datainfo.minbound[i] = static_cast<double>(tempdim) / MULT;
 		}
 		++idcount;
 		if (classnames.find(classname) == classnames.end())
@@ -146,6 +149,7 @@ void initdata(vector<Pic>& pics, Datainfo& datainfo, string datafilename)
 		}
 
 		Pic pic(idcount, filename, classname, classidcount, dim, dims);
+		//printPic(pic);
 		pics.push_back(pic);
 	}
 	datainfo.classnum = classidcount;
@@ -161,7 +165,7 @@ bool _cdecl QueryResultCallback(Pic* a_data, vector<int>& resultid)
 }
 
 
-Result testRtree(int objnum, int range, vector<Pic>& pics, Datainfo& datainfo)
+Result testRtree(int objnum, double range, vector<Pic>& pics, Datainfo& datainfo)
 {
 	rt.RemoveAll();
 	srand((unsigned int)time(nullptr));
@@ -173,24 +177,26 @@ Result testRtree(int objnum, int range, vector<Pic>& pics, Datainfo& datainfo)
 		{
 			id = rand() % datainfo.datanum;
 		}
-		float cmin[cdim], cmax[cdim];
+		double cmin[cdim], cmax[cdim];
 		for (int j = 0; j < cdim; ++j)
 		{
 			cmin[j] = cmax[j] = pics[id].dims[j];
 		}
-		//printPic(pics[id]);
+		//cout << i << endl;
 		rt.Insert(cmin, cmax, &pics[id]);
 	}
 	double alldisktime = 0.0, allaccur = 0.0, allrecall = 0.0;
+	double resultnum = 0.0;
 	for (int i = 0; i < TESTNUM; ++i)
 	{
 		vector<int> resultid;
 		int id = rand() % datainfo.datanum;
-		float cmin[cdim], cmax[cdim];
+		double cmin[cdim], cmax[cdim];
 		for (int j = 0; j < cdim; ++j)
 		{
 			cmin[j] = pics[id].dims[j] - range;
 			cmax[j] = pics[id].dims[j] + range;
+			//cout << cmin[j] << "   " << cmax[j] << endl;
 			if (pics[id].dims[j] - range < datainfo.minbound[j])
 				cmin[j] = datainfo.minbound[j];
 			if (pics[id].dims[j] + range > datainfo.maxbound[j])
@@ -200,6 +206,7 @@ Result testRtree(int objnum, int range, vector<Pic>& pics, Datainfo& datainfo)
 		alldisktime += rt.disktime;
 		int allresult = resultid.size();
 		int hit = 0;
+		resultnum += allresult;
 		for (int k = 0; k < resultid.size(); ++k)
 		{
 			if (pics[resultid[k] - 1].classid == pics[id].classid)
@@ -212,8 +219,17 @@ Result testRtree(int objnum, int range, vector<Pic>& pics, Datainfo& datainfo)
 		allaccur += (static_cast<double>(hit) / allresult);
 		allrecall += (static_cast<double>(hit) / datainfo.classcount[pics[id].classid - 1]);
 	}
-	Result result(alldisktime / TESTNUM, allaccur / TESTNUM, allrecall / TESTNUM);
+	Result result(alldisktime / TESTNUM, allaccur / TESTNUM, allrecall / TESTNUM, resultnum / TESTNUM);
 	return result;
+}
+
+void printcsv(vector<double>& vec)
+{
+	for (int i = 0; i < vec.size()-1; ++i)
+	{
+		cout << vec[i] << ",";
+	}
+	cout << vec[vec.size() - 1] << endl;
 }
 
 int main()
@@ -224,22 +240,41 @@ int main()
 	vector<Pic> pics_colorhisto;
 	Datainfo datainfo1;
 	Datainfo datainfo2;
-	//initdata(pics_colormoment, datainfo1, data1filename);
+	initdata(pics_colormoment, datainfo1, data1filename);
 	initdata(pics_colorhisto, datainfo2, data2filename);
 	int objnum = datainfo2.datanum;
-	int range = 100;
-	for (int i = 0; i < 5; ++i, range += 20)
+	double range = 100;
+	vector<double> rangevec, accvec, callbackvec, resultnumvec;
+	for (int i = 0; i < 60; ++i, range += 80)
 	{
-		/*Result result1 = testRtree(objnum, range, pics_colormoment, datainfo1);
+		//Result result1 = testRtree(objnum, range, pics_colormoment, datainfo1);
 		cout << "Query Range: " << range << endl;
-		cout << "Color Moment Features result:" << endl;
-		cout << "Accuracy: " << result1.accur << endl;
-		cout << "Call Back: " << result1.recall << endl;*/
+		//cout << "Color Moment Features result:" << endl;
+		//cout << "Accuracy: " << result1.accur << endl;
+		//cout << "Call Back: " << result1.recall << endl;
+		//cout << "Result Number: " << result1.resultnum << endl;
+		//rangevec.push_back(range);
+		//accvec.push_back(result1.accur);
+		//callbackvec.push_back(result1.recall);
+		//resultnumvec.push_back(result1.resultnum);
 		Result result2 = testRtree(objnum, range, pics_colorhisto, datainfo2);
 		cout << "Color Histogram Features result:" << endl;
 		cout << "Accuracy: " << result2.accur << endl;
 		cout << "Call Back: " << result2.recall << endl;
+		cout << "Result Number: " << result2.resultnum << endl;
+		rangevec.push_back(range);
+		accvec.push_back(result2.accur);
+		callbackvec.push_back(result2.recall);
+		resultnumvec.push_back(result2.resultnum);
 		cout << "====================" << endl;
 	}
+	cout << "Range: " << endl;
+	cout << "Accuracy: " << endl;
+	cout << "Callback: " << endl;
+	cout << "Result Number: " << endl;
+	printcsv(rangevec);
+	printcsv(accvec);
+	printcsv(callbackvec);
+	printcsv(resultnumvec);
 	return 0;
 }
