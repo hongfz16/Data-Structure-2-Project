@@ -160,6 +160,7 @@ Result testRtree(int objnum, int range, vector<Pic>& pics, Datainfo& datainfo)
 		{
 			cmin[j] = cmax[j] = pics[id].dims[j];
 		}
+		//cout << i << endl;
 		rt.Insert(cmin, cmax, &pics[id]);
 	}
 	double alldisktime = 0.0, allaccur = 0.0, allrecall = 0.0;
@@ -200,23 +201,24 @@ Result testRtree(int objnum, int range, vector<Pic>& pics, Datainfo& datainfo)
 int main()
 {
 	const string data1filename = "../../../Feature/ColorMoment/feature.txt";
-	const string data2filename = "../../../Feature/";
+	const string data2filename = "../../../Feature/ColorHistogram/colorhist.txt";
 	vector<Pic> pics_colormoment;
 	vector<Pic> pics_colorhisto;
 	Datainfo datainfo1;
 	Datainfo datainfo2;
 	initdata(pics_colormoment, datainfo1, data1filename);
 	initdata(pics_colorhisto, datainfo2, data2filename);
+	cout << datainfo2.datanum << endl;
 	int objnum = datainfo1.datanum;
 	int range = 20;
 	for (int i = 0; i < 5; ++i, range += 20)
 	{
-		Result result1 = testRtree(objnum, range, pics_colormoment, datainfo1);
-		Result result2 = testRtree(objnum, range, pics_colormoment, datainfo2);
-		cout << "Query Range: " << range << endl;
-		cout << "Color Moment Features result:" << endl;
-		cout << "Accuracy: " << result1.accur << endl;
-		cout << "Call Back: " << result1.recall << endl;
+		//Result result1 = testRtree(objnum, range, pics_colormoment, datainfo1);
+		Result result2 = testRtree(objnum, range, pics_colorhisto, datainfo2);
+		//cout << "Query Range: " << range << endl;
+		//cout << "Color Moment Features result:" << endl;
+		//cout << "Accuracy: " << result1.accur << endl;
+		//cout << "Call Back: " << result1.recall << endl;
 		cout << "Color Histogram Features result:" << endl;
 		cout << "Accuracy: " << result2.accur << endl;
 		cout << "Call Back: " << result2.recall << endl;
