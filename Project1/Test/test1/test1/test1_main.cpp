@@ -8,9 +8,9 @@
 #include <ctime>
 using namespace std;
 
-#define TESTNUM 5000
+#define TESTNUM 20000
 #define MULT 20
-const int cdim = 24;
+const int cdim = 4;
 
 struct Datainfo
 {
@@ -164,6 +164,7 @@ Result testRtree(int objnum,int range)
 		{
 			id = rand() % datainfo.datanum;
 		}
+		chosenpics.insert(id);
 		double cmin[cdim], cmax[cdim];
 		for (int j = 0; j < cdim; ++j)
 		{
@@ -176,6 +177,13 @@ Result testRtree(int objnum,int range)
 	{
 		vector<int> resultid;
 		int id = rand() % datainfo.datanum;
+		while (1)
+		{
+			if (chosenpics.find(id) == chosenpics.end())
+				id = rand() % datainfo.datanum;
+			else
+				break;
+		}
 		double cmin[cdim], cmax[cdim];
 		for (int j = 0; j < cdim; ++j)
 		{

@@ -1,0 +1,125 @@
+Dimension: 4
+Object number: 1000
+Average Disk Time: 50.49
+Average Result Number: 46.6259
+Dimension: 4
+Object number: 2000
+Average Disk Time: 85.2435
+Average Result Number: 86.6478
+Dimension: 4
+Object number: 3000
+Average Disk Time: 114.977
+Average Result Number: 129.251
+Dimension: 4
+Object number: 4000
+Average Disk Time: 165.198
+Average Result Number: 189.161
+Dimension: 4
+Object number: 5000
+Average Disk Time: 199.871
+Average Result Number: 228.816
+
+Dimension: 8
+Object number: 1000
+Average Disk Time: 59.1887
+Average Result Number: 15.2381
+Dimension: 8
+Object number: 2000
+Average Disk Time: 116.041
+Average Result Number: 36.5191
+Dimension: 8
+Object number: 3000
+Average Disk Time: 165.847
+Average Result Number: 56.0592
+Dimension: 8
+Object number: 4000
+Average Disk Time: 224.604
+Average Result Number: 72.7929
+Dimension: 8
+Object number: 5000
+Average Disk Time: 273.634
+Average Result Number: 89.3507
+
+Dimension: 12
+Object number: 1000
+Average Disk Time: 59.8342
+Average Result Number: 16.4097
+Dimension: 12
+Object number: 2000
+Average Disk Time: 110.489
+Average Result Number: 32.9635
+Dimension: 12
+Object number: 3000
+Average Disk Time: 159.038
+Average Result Number: 47.8014
+Dimension: 12
+Object number: 4000
+Average Disk Time: 210.594
+Average Result Number: 63.7004
+Dimension: 12
+Object number: 5000
+Average Disk Time: 259.731
+Average Result Number: 81.6049
+
+Dimension: 16
+Object number: 1000
+Average Disk Time: 57.0751
+Average Result Number: 13.1563
+Dimension: 16
+Object number: 2000
+Average Disk Time: 123.583
+Average Result Number: 33.0984
+Dimension: 16
+Object number: 3000
+Average Disk Time: 167.027
+Average Result Number: 47.0866
+Dimension: 16
+Object number: 4000
+Average Disk Time: 219.494
+Average Result Number: 66.5358
+Dimension: 16
+Object number: 5000
+Average Disk Time: 271.669
+Average Result Number: 78.0302
+
+Dimension: 20
+Object number: 1000
+Average Disk Time: 57.3307
+Average Result Number: 17.1853
+Dimension: 20
+Object number: 2000
+Average Disk Time: 108.582
+Average Result Number: 28.0407
+Dimension: 20
+Object number: 3000
+Average Disk Time: 162.867
+Average Result Number: 43.9288
+Dimension: 20
+Object number: 4000
+Average Disk Time: 195.426
+Average Result Number: 61.6594
+Dimension: 20
+Object number: 5000
+Average Disk Time: 247.984
+Average Result Number: 76.5869
+
+Dimension: 24
+Object number: 1000
+Average Disk Time: 59.5356
+Average Result Number: 15.5222
+Dimension: 24
+Object number: 2000
+Average Disk Time: 116.32
+Average Result Number: 31.6872
+Dimension: 24
+Object number: 3000
+Average Disk Time: 167.781
+Average Result Number: 44.9652
+Dimension: 24
+Object number: 4000
+Average Disk Time: 219.5
+Average Result Number: 57.604
+Dimension: 24
+Object number: 5000
+Average Disk Time: 260.945
+Average Result Number: 69.0181
