@@ -71,5 +71,8 @@ plt.plot(xnew,func3(xnew))
 plt.plot(xnew,func4(xnew))
 plt.plot(xnew,func5(xnew))
 
+plt.xlabel('Retrived Object Number')
+plt.ylabel('F-Measure, alpha = 1')
+
 plt.legend(("Color Moment","Color Histogram 24 Dim","Color Histogram 15 Dim","Color Histogram 9 Dim","Provided Color Moment 9 Dim"))
 plt.show()

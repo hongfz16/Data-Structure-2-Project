@@ -16,7 +16,7 @@ void printtemp(ofstream& fout, vector<string>& v)
 
 int main()
 {
-	string filename("historesult.txt");
+	string filename("updateresult.txt");
 	ifstream fin(filename);
 	ofstream fout("temp.txt");
 	string line;
