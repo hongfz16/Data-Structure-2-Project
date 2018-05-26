@@ -11,8 +11,8 @@
 using namespace std;
 
 #define TESTNUM 50000
-#define MULT 20
-const int cdim = 24;
+#define MULT 1
+const int cdim = 9;
 
 struct Datainfo
 {
@@ -307,14 +307,16 @@ Result testRtree(int objnum, double range, vector<Pic>& pics, Datainfo& datainfo
 		double co = 100;
 		for (int k = 0; k < rank.size() && k < 100; ++k)
 		{
-			if (rank[k].second == 0)
-				continue;
 			if (pics[rank[k].first - 1].classid == pics[id].classid)
 			{
-				point += co / rank[k].second;
+				//point += co / rank[k].second;
+				point += 100 - k;
 			}
 			else
-				point -= co / rank[k].second;
+			{
+				//point -= co / rank[k].second;
+				point -= 100 - k;
+			}
 		}
 		if (allresult == 0)
 			continue;
@@ -346,11 +348,11 @@ int main()
 	vector<Pic> pics_colorhisto;
 	Datainfo datainfo1;
 	Datainfo datainfo2;
-	//initdata(pics_colormoment, datainfo1, data1filename);
+	initdata(pics_colormoment, datainfo1, data1filename);
 	//initProvidedData(pics_colormoment, datainfo1, prodatafilename, imagelistfilename);
 	initdata(pics_colorhisto, datainfo2, data2filename);
 	int objnum = datainfo2.datanum;
-	double range = 600;
+	double range = 20;
 	//cout << "Query Range: " << range << endl;
 	//Result result1 = testRtree(objnum, range, pics_colormoment, datainfo1);
 	//cout << "Color Moment Features result:" << endl;
@@ -362,7 +364,7 @@ int main()
 	{
 		diminuse.push_back(i);
 	}
-	Result result2 = testRtree(objnum, range, pics_colorhisto, datainfo2,diminuse);
+	Result result2 = testRtree(objnum, range, pics_colormoment, datainfo1, diminuse);
 	cout << "Color Histogram Features result:" << endl;
 	cout << "Accuracy: " << result2.accur << endl;
 	cout << "Call Back: " << result2.recall << endl;

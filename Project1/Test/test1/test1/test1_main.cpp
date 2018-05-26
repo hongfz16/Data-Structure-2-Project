@@ -10,7 +10,7 @@ using namespace std;
 
 #define TESTNUM 20000
 #define MULT 20
-const int cdim = 4;
+const int cdim = 24;
 
 struct Datainfo
 {
@@ -219,14 +219,14 @@ int main()
 {
 	initdata();
 	int range = 500;
-	int objnum[5] = { 1000,2000,3000,4000,5000 };
-	for (int i = 0; i < 5; ++i)
+	int objnum[9] = { 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000 };
+	for (int i = 0; i < 9; ++i)
 	{
 		Result result = testRtree(objnum[i], range);
 		cout << "Dimension: " << cdim << endl;
 		cout << "Object number: " << objnum[i] << endl;
 		cout << "Average Disk Time: " << result.disktime << endl;
-		cout << "Average Result Number: " << result.resultnum << endl;
+		cout << "Average Disk Time Per 100 Result: " << result.disktime / result.resultnum * 100 << endl;
 	}
 	return 0;
 }
