@@ -23,10 +23,14 @@
 
 
 \title{Prob3 Doc}
+\author{周展平\\2016013253\\Email: \href{mailto:zhouzp16@163.com}{zhouzp16@163.com}}
+\date{\today}
+\geometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+
 \begin{document}
   \maketitle
   \section*{特征：Color Moment}
-  	矩特征是一类重要的图像特征，颜色矩特征(color moment)是一类常用的矩特征，优势在于维度较低，且能够较为充分表达图像的颜色特征。具体来说，颜色矩特征是一个包含9个维度的向量：
+    矩特征是一类重要的图像特征，颜色矩特征(color moment)是一类常用的矩特征，优势在于维度较低，且能够较为充分表达图像的颜色特征。具体来说，颜色矩特征是一个包含9个维度的向量：
     \begin{equation*}
     color moment = (\mu_1,\mu_2,\mu_3,\sigma_1,\sigma_2,\sigma_3,s_1,s_2,s_3)
     \end{equation*}
@@ -40,7 +44,73 @@
     \end{equation*}
     代表颜色通道的方差(variance),
     \begin{equation*}
-    \sigma=\big(\frac{1}{mn}\sum_{i=1}^{m}\sum_{j=1}^{n}(x_{ij}-\mu)^3\big)^{frac{1}{3}}
+    s=\big(\frac{1}{mn}\sum_{i=1}^{m}\sum_{j=1}^{n}(x_{ij}-\mu)^3\big)^{frac{1}{3}}
+    \end{equation*}
+    代表颜色通道的斜度(skewness)。
+  \section*{不同特征的检索效果比较}
+    在本次实验中，我们比较了5种特征的检索结果，分别是：9维、15维、24维的Color Histogram特征，提供的Color Moment特征以及我们自己实现的Color Moment特征。我们采用自己设计的评分策略对检索效果的好坏进行衡量，结果在下面的表格中。
+    \begin{table} \caption {特征对检索评分的影响} \centering
+       \begin{tabular}{ccc}
+        \toprule  %添加表格头部粗线
+        特征种类& 得分\\
+        \midrule  %添加表格中横线
+        Color Histogram(dim=9) & -295.098 \\
+        Color Histogram(dim=15) & -258.124\\
+        Color Histogram(dim=24) & -275.913\\
+        Color Moment(provided) & -2081.56\\
+        Color Moment(extracted) & -2434.01\\
+        \bottomrule %添加表格底部粗线
+        \end{tabular}
+    \end{table}
+    分析表中数据，可以得到如下结论：（1）Color Histogram特征在检索效果上明显优于Color Moment特征。 （2）维度与Color Histogram特征的检索效果之间没有显著的相关性。 （3）各类特征的得分均小于0，说明检索效果均较差。
+\end{document}
+%!TEX program = xelatex
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{CJK}
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{pst-node}
+\usepackage{pst-text}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage[colorlinks]{hyperref}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{clrscode}
+\usepackage{amsthm}
+
+
+\title{Prob3 Doc}
+\author{周展平\\2016013253\\Email: \href{mailto:zhouzp16@163.com}{zhouzp16@163.com}}
+\date{\today}
+\geometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+
+\begin{document}
+  \maketitle
+  \section*{特征：Color Moment}
+    矩特征是一类重要的图像特征，颜色矩特征(color moment)是一类常用的矩特征，优势在于维度较低，且能够较为充分表达图像的颜色特征。具体来说，颜色矩特征是一个包含9个维度的向量：
+    \begin{equation*}
+    color moment = (\mu_1,\mu_2,\mu_3,\sigma_1,\sigma_2,\sigma_3,s_1,s_2,s_3)
+    \end{equation*}
+    对于一幅$m*n$的图像，3个颜色通道分别占用3个特征，分别为：
+    \begin{equation*}
+    \mu=\frac{1}{mn}\sum_{i=1}^{m}\sum_{j=1}^{n}x_{ij}
+    \end{equation*}
+    代表颜色通道的均值(mean),
+    \begin{equation*}
+    \sigma=\big(\frac{1}{mn}\sum_{i=1}^{m}\sum_{j=1}^{n}(x_{ij}-\mu)^2\big)^{frac{1}{2}}
+    \end{equation*}
+    代表颜色通道的方差(variance),
+    \begin{equation*}
+    s=\big(\frac{1}{mn}\sum_{i=1}^{m}\sum_{j=1}^{n}(x_{ij}-\mu)^3\big)^{frac{1}{3}}
     \end{equation*}
     代表颜色通道的斜度(skewness)。
   \section*{不同特征的检索效果比较}
