@@ -12,7 +12,7 @@ using namespace std;
 
 #define TESTNUM 50000
 #define MULT 20
-const int cdim = 24;
+const int cdim = 9;
 
 struct Datainfo
 {
@@ -370,7 +370,7 @@ int main()
 	const string data1filename = "../../../Feature/ColorMoment/feature.txt";
 	const string prodatafilename = "../../../Feature/ProvidedFeature/color_feature.txt";
 	const string imagelistfilename = "../../../Feature/ProvidedFeature/imagelist.txt";
-	const string data2filename = "../../../Feature/ColorHistogram/colorhist.txt";
+	const string data2filename = "../../../Feature/ColorHistogram/colorhist_9dim.txt";
 	vector<Pic> pics_colormoment;
 	vector<Pic> pics_colorhisto;
 	Datainfo datainfo1;
@@ -379,7 +379,7 @@ int main()
 	//initProvidedData(pics_colormoment, datainfo1, prodatafilename, imagelistfilename);
 	initdata(pics_colorhisto, datainfo2, data2filename);
 	int objnum = datainfo2.datanum;
-	double range = 700;
+	double range = 1000;
 	//cout << "Query Range: " << range << endl;
 	//Result result1 = testRtree(objnum, range, pics_colormoment, datainfo1);
 	//cout << "Color Moment Features result:" << endl;
@@ -392,20 +392,20 @@ int main()
 		diminuse.push_back(i);
 	}
 	//cout << "Color Histogram Features result:" << endl;
-	cout << "Color Histogram (24D) Features result:" << endl;
+	cout << "Color Histogram (15D) Features result:" << endl;
 	Result result2 = testRtree(objnum, range, pics_colorhisto, datainfo2, diminuse,calcDist1);
 	cout << "Distance 1:" << endl;
 	cout << "Accuracy: " << result2.accur << endl;
 	cout << "Call Back: " << result2.recall << endl;
 	cout << "Result Number: " << result2.resultnum << endl;
 	cout << "Relevance point: " << result2.points << endl;
-	result2 = testRtree(objnum, range, pics_colormoment, datainfo1, diminuse, calcDist2);
+	result2 = testRtree(objnum, range, pics_colorhisto, datainfo2, diminuse, calcDist2);
 	cout << "Distance 2:" << endl;
 	cout << "Accuracy: " << result2.accur << endl;
 	cout << "Call Back: " << result2.recall << endl;
 	cout << "Result Number: " << result2.resultnum << endl;
 	cout << "Relevance point: " << result2.points << endl;
-	result2 = testRtree(objnum, range, pics_colormoment, datainfo1, diminuse, calcDist3);
+	result2 = testRtree(objnum, range, pics_colorhisto, datainfo2, diminuse, calcDist3);
 	cout << "Distance 3:" << endl;
 	cout << "Accuracy: " << result2.accur << endl;
 	cout << "Call Back: " << result2.recall << endl;

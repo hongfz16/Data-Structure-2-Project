@@ -55,7 +55,7 @@ struct Visitor {
 	Visitor() : count(0), ContinueVisiting(true) {};
 	
 	void operator()(const RTree::Leaf * const leaf) 
-	{
+	{ 
 #if defined( RANDOM_DATASET )
 		std::cout << "Visiting " << count << std::endl;
 #elif defined( GUTTMAN_DATASET )

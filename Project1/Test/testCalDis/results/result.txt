@@ -5,3 +5,56 @@ Color Histogram 15 Dimensions: -258.124
 Color Histogram 9 Dimensions: -295.098
 Color Moment Provided 9 Dimensions: -2081.56
 Color Moment 9 Dimensions: -2434.01
+
+Using more relevance function
+
+Color Histogram (24D) Features result:
+Distance 1:
+Accuracy: 0.494293
+Call Back: 0.0424824
+Result Number: 116.286
+Relevance point: -361.384
+Distance 2:
+Accuracy: 0.49585
+Call Back: 0.0416679
+Result Number: 113.183
+Relevance point: -380.994
+Distance 3:
+Accuracy: 0.500732
+Call Back: 0.0427967
+Result Number: 115.747
+Relevance point: -474.873
+
+Color Histogram (15D) Features result:
+Distance 1:
+Accuracy: 0.415872
+Call Back: 0.0502019
+Result Number: 141.92
+Relevance point: -690.243
+Distance 2:
+Accuracy: 0.424105
+Call Back: 0.0497886
+Result Number: 140.659
+Relevance point: -706.103
+Distance 3:
+Accuracy: 0.418333
+Call Back: 0.0468995
+Result Number: 132.457
+Relevance point: -815.982
+
+Color Histogram (9D) Features result:
+Distance 1:
+Accuracy: 0.368899
+Call Back: 0.0502414
+Result Number: 137.008
+Relevance point: -925.549
+Distance 2:
+Accuracy: 0.373025
+Call Back: 0.0450151
+Result Number: 121.851
+Relevance point: -963.701
+Distance 3:
+Accuracy: 0.371486
+Call Back: 0.0455175
+Result Number: 124.526
+Relevance point: -1076.72
