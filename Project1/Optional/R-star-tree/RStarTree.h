@@ -151,7 +151,7 @@ public:
 		m_size += 1;
 	}
 
-	void Insert(int a_min[dimensions], int a_max[dimensions], LeafType& a_dataId)
+	void Insert(int a_min[dimensions], int a_max[dimensions], LeafType a_dataId)
 	{
 		BoundingBox bb;
 		for (int i = 0; i < dimensions; ++i)
@@ -636,11 +636,14 @@ protected:
 	
 		void operator()( BoundedItem * item ) 
 		{
-			++disktime;
+			//++disktime;
 			Leaf * leaf = static_cast<Leaf*>(item);
 		
 			if (accept(leaf))
+			{
+				//++disktime;
 				visit(leaf);
+			}
 		}
 	};
 	

@@ -9,8 +9,8 @@
 using namespace std;
 
 #define TESTNUM 20000
-#define MULT 20
-const int cdim = 24;
+#define MULT 1
+const int cdim = 9;
 
 struct Datainfo
 {
@@ -61,10 +61,10 @@ struct Result
 vector<Pic> pics;
 Datainfo datainfo;
 
-RTree<Pic*, double, cdim> rt;
+RTree<Pic*, float, cdim> rt;
 
-//const string datafilename = "../../../Feature/ColorMoment/feature.txt";
-const string datafilename = "../../../Feature/ColorHistogram/colorhist.txt";
+const string datafilename = "../../../Feature/ColorMoment/feature.txt";
+//const string datafilename = "../../../Feature/ColorHistogram/colorhist.txt";
 void initdata()
 {
 	int idcount = 0;
@@ -165,7 +165,7 @@ Result testRtree(int objnum,int range)
 			id = rand() % datainfo.datanum;
 		}
 		chosenpics.insert(id);
-		double cmin[cdim], cmax[cdim];
+		float cmin[cdim], cmax[cdim];
 		for (int j = 0; j < cdim; ++j)
 		{
 			cmin[j] = cmax[j] = pics[id].dims[j];
@@ -184,7 +184,7 @@ Result testRtree(int objnum,int range)
 			else
 				break;
 		}
-		double cmin[cdim], cmax[cdim];
+		float cmin[cdim], cmax[cdim];
 		for (int j = 0; j < cdim; ++j)
 		{
 			cmin[j] = pics[id].dims[j] - range;
@@ -218,7 +218,7 @@ Result testRtree(int objnum,int range)
 int main()
 {
 	initdata();
-	int range = 500;
+	int range = 20;
 	int objnum[9] = { 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000 };
 	for (int i = 0; i < 9; ++i)
 	{

@@ -37,7 +37,7 @@ using namespace std;
 	typedef RStarTree<std::string, 2, 2, 3> 	RTree;
 #endif
 #ifdef COLORMOMENT
-	typedef RStarTree<Pic*, 9, 4, 8> RTree;
+	
 #endif
 
 typedef RTree::BoundingBox			BoundingBox;
@@ -57,33 +57,10 @@ BoundingBox bounds(int x, int y, int w, int h)
 }
 
 
-struct Visitor {
-	int count;
-	bool ContinueVisiting;
-	vector<int> resultId;
-	
-	Visitor() : count(0), ContinueVisiting(true) {};
-	
-	void operator()(const RTree::Leaf * const leaf) 
-	{ 
-#if defined( RANDOM_DATASET )
-		resultId.push_back(leaf->leaf);
-		//std::cout << "Visiting " << count << std::endl;
-#elif defined( GUTTMAN_DATASET )
-		std::cout << "#" << count << ": visited " << leaf->leaf << " with bound " << leaf->bound.ToString() << std::endl;	
-#else
-		#error "Undefined dataset"
-#endif
-
-		count++;
-	}
-};
-
-
 
 int main(int argc, char ** argv)
 {
-	RTree tree;
+	//RTree tree;
 	Visitor x;
 	
 	// insert a bunch of items into the tree
@@ -152,7 +129,17 @@ int main(int argc, char ** argv)
 #endif
 	
 #ifdef COLORMOMENT
-
+	vector<Pic> colormoment;
+	Datainfo datainfo;
+	initdata(colormoment, datainfo, "../../Feature/ColorMoment/feature.txt");
+	vector<int> diminuse;
+	for (int i = 0; i < cdim; ++i)
+	{
+		diminuse.push_back(i);
+	}
+	Result result = testRtree(5000, 20, colormoment, datainfo, diminuse);
+	std::cout << "Disk Time: " << result.disktime << std::endl;
+	std::cout << "Retrived Number: " << result.resultnum << std::endl;
 #endif
 
 #ifdef RANDOM_DATASET
