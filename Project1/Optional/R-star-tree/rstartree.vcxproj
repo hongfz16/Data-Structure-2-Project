@@ -95,6 +95,7 @@
     <ClInclude Include="RStarTree.h" />
     <ClInclude Include="RStarTreeInterface.h" />
     <ClInclude Include="RStarVisitor.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -22,16 +22,22 @@
 
 #include <stdio.h>
 #include "RStarTree.h"
+#include "utils.h"
 
 using namespace std;
 
-#define RANDOM_DATASET
+//#define RANDOM_DATASET
 //#define GUTTMAN_DATASET
+#define COLORMOMENT
 
 #ifdef RANDOM_DATASET
 	typedef RStarTree<int, 2, 2, 4> 			RTree;
-#else
+#endif
+#ifdef GUTTMAN_DATASET
 	typedef RStarTree<std::string, 2, 2, 3> 	RTree;
+#endif
+#ifdef COLORMOMENT
+	typedef RStarTree<Pic*, 9, 4, 8> RTree;
 #endif
 
 typedef RTree::BoundingBox			BoundingBox;
@@ -68,6 +74,7 @@ struct Visitor {
 #else
 		#error "Undefined dataset"
 #endif
+
 		count++;
 	}
 };
@@ -144,6 +151,9 @@ int main(int argc, char ** argv)
 	
 #endif
 	
+#ifdef COLORMOMENT
+
+#endif
 
 #ifdef RANDOM_DATASET
 	srand(time(0));
