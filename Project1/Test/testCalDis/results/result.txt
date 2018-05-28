@@ -1,0 +1,7 @@
+First 100 Results were considered
+
+Color Histogram 24 Dimensions: -275.913
+Color Histogram 15 Dimensions: -258.124
+Color Histogram 9 Dimensions: -295.098
+Color Moment Provided 9 Dimensions: -2081.56
+Color Moment 9 Dimensions: -2434.01
