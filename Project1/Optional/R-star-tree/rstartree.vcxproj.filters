@@ -29,5 +29,8 @@
     <ClInclude Include="RStarVisitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RStarTreeInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

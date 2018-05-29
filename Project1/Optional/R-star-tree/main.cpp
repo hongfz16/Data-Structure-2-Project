@@ -18,15 +18,18 @@
 
 #include <string>
 #include <ctime>
+#include <vector>
 
 #include <stdio.h>
 #include "RStarTree.h"
+
+using namespace std;
 
 #define RANDOM_DATASET
 //#define GUTTMAN_DATASET
 
 #ifdef RANDOM_DATASET
-	typedef RStarTree<int, 2, 32, 64> 			RTree;
+	typedef RStarTree<int, 2, 2, 4> 			RTree;
 #else
 	typedef RStarTree<std::string, 2, 2, 3> 	RTree;
 #endif
@@ -51,13 +54,15 @@ BoundingBox bounds(int x, int y, int w, int h)
 struct Visitor {
 	int count;
 	bool ContinueVisiting;
+	vector<int> resultId;
 	
 	Visitor() : count(0), ContinueVisiting(true) {};
 	
 	void operator()(const RTree::Leaf * const leaf) 
 	{
 #if defined( RANDOM_DATASET )
-		std::cout << "Visiting " << count << std::endl;
+		resultId.push_back(leaf->leaf);
+		//std::cout << "Visiting " << count << std::endl;
 #elif defined( GUTTMAN_DATASET )
 		std::cout << "#" << count << ": visited " << leaf->leaf << " with bound " << leaf->bound.ToString() << std::endl;	
 #else
@@ -143,22 +148,44 @@ int main(int argc, char ** argv)
 #ifdef RANDOM_DATASET
 	srand(time(0));
 
-	#define nodes 20000
+	#define nodes 20
 	
-	for (int i = 0; i < nodes/2; i++)
-		tree.Insert(i, bounds( rand() % 1000, rand() % 1000, rand() % 10, rand() % 10));
+	int a_min[2], a_max[2];
+	for (int i = 0; i < nodes; i++)
+	{
+		//tree.Insert(i, bounds( rand() % 1000, rand() % 1000, rand() % 10, rand() % 10));
+		for (int j = 0; j < 2; ++j)
+		{
+			a_min[j] = a_max[j] = rand() % 1000;
+		}
+		tree.Insert(a_min, a_max, i);
+	}
 		
-	for (int i = 0; i < nodes/2; i++)
-		tree.Insert(i, bounds( rand() % 1000, rand() % 1000, rand() % 20, rand() % 20));
+	//for (int i = 0; i < nodes/2; i++)
+		//tree.Insert(i, bounds( rand() % 1000, rand() % 1000, rand() % 20, rand() % 20));
 		
 	BoundingBox bound = bounds( 100,100, 300,400 );
-	
+	int s_min[2] = { 100, 100 };
+	int s_max[2] = { 400, 500 };
+	std::cout << "Searching in " << bound.ToString() << std::endl;
+	x = tree.Search(s_min, s_max, RTree::AcceptAny(), Visitor());
+	std::cout << "disktime:" << tree.disktime << std::endl;
+	std::cout << "Visited " << x.count << " nodes (" << tree.GetSize() << " nodes in tree)" << std::endl;
+	std::cout << "result:" << std::endl;
+	for (auto iter = x.resultId.begin(); iter != x.resultId.end(); ++iter)
+	{
+		std::cout << *iter << std::endl;
+	}
+
+	/*
 	x = tree.Query(RTree::AcceptAny(), Visitor());
+	std::cout << "disktime:" << tree.disktime << std::endl;
 	std::cout << "AcceptAny: " << x.count << " nodes visited (" << tree.GetSize() << " nodes in tree)" << std::endl;
 	
 	
 	std::cout << "Searching in " << bound.ToString() << std::endl;
 	x = tree.Query(RTree::AcceptEnclosing(bound), Visitor());
+	std::cout << "disktime:" << tree.disktime << std::endl;
 	std::cout << "Visited " << x.count << " nodes (" << tree.GetSize() << " nodes in tree)" << std::endl;
 	
 	std::cout << "Removing enclosed area " << bound.ToString() << std::endl;
@@ -166,8 +193,9 @@ int main(int argc, char ** argv)
 	
 	std::cout << "Searching in " << bound.ToString() << std::endl;
 	x = tree.Query(RTree::AcceptEnclosing(bound), Visitor());
+	std::cout << "disktime:" << tree.disktime << std::endl;
 	std::cout << "Visited " << x.count << " nodes. (" << tree.GetSize() << " nodes in tree)" << std::endl;
-	
+	*/
 	//tree.Print();
 		
 #endif

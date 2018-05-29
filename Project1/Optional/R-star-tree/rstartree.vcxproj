@@ -93,6 +93,7 @@
   <ItemGroup>
     <ClInclude Include="RStarBoundingBox.h" />
     <ClInclude Include="RStarTree.h" />
+    <ClInclude Include="RStarTreeInterface.h" />
     <ClInclude Include="RStarVisitor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

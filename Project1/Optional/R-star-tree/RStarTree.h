@@ -86,6 +86,8 @@ template <
 class RStarTree {
 public:
 
+	static int disktime;
+
 	// shortcuts
 	typedef RStarBoundedItem<dimensions>		BoundedItem;
 	typedef typename BoundedItem::BoundingBox	BoundingBox;
@@ -117,6 +119,11 @@ public:
 		);
 	}
 	
+	void RemoveAll()
+	{
+		Remove(AcceptAny(), RemoveLeaf());
+	}
+
 	// Single insert function, adds a new item to the tree
 	void Insert(LeafType leaf, const BoundingBox &bound)
 	{
@@ -142,6 +149,17 @@ public:
 			InsertInternal(newLeaf, m_root);
 			
 		m_size += 1;
+	}
+
+	void Insert(int a_min[dimensions], int a_max[dimensions], LeafType& a_dataId)
+	{
+		BoundingBox bb;
+		for (int i = 0; i < dimensions; ++i)
+		{
+			bb.edges[i].first = a_min[i];
+			bb.edges[i].second = a_max[i];
+		}
+		Insert(a_dataId, bb);
 	}
 
 	
@@ -214,13 +232,25 @@ public:
 	{
 		if (m_root)
 		{	
+			disktime = 0;
 			QueryFunctor<Acceptor, Visitor> query(accept, visitor);
 			query(m_root);
 		}
-		
+
 		return visitor;
 	}
 
+	template <typename Acceptor, typename Visitor>
+	Visitor Search(int a_min[dimensions], int a_max[dimensions], const Acceptor& acceptor, Visitor visitor)
+	{
+		BoundingBox bb;
+		for (int i = 0; i < dimensions; ++i)
+		{
+			bb.edges[i].first = a_min[i];
+			bb.edges[i].second = a_max[i];
+		}
+		return Query(AcceptEnclosing(bb), visitor);
+	}
 	
 	/**
 		\brief Removes item(s) from the tree. 
@@ -606,6 +636,7 @@ protected:
 	
 		void operator()( BoundedItem * item ) 
 		{
+			++disktime;
 			Leaf * leaf = static_cast<Leaf*>(item);
 		
 			if (accept(leaf))
@@ -621,19 +652,20 @@ protected:
 		Visitor &visitor;
 		
 		explicit QueryFunctor(const Acceptor &a, Visitor &v) : accept(a), visitor(v) {}
-	
+		
 		void operator()(BoundedItem * item)
 		{
 			Node * node = static_cast<Node*>(item);
-		
 			if (visitor.ContinueVisiting && accept(node))
 			{
+				++disktime;
 				if (node->hasLeaves)
 					for_each(node->items.begin(), node->items.end(), VisitFunctor<Acceptor, Visitor>(accept, visitor));
 				else
 					for_each(node->items.begin(), node->items.end(), *this);
 			}
 		}
+
 	};
 	
 	
@@ -758,6 +790,13 @@ private:
 	
 	std::size_t m_size;
 };
+
+
+template <
+	typename LeafType,
+	std::size_t dimensions, std::size_t min_child_items, std::size_t max_child_items
+>
+int RStarTree<LeafType, dimensions, min_child_items, max_child_items>::disktime = 0;
 
 #undef RSTAR_TEMPLATE
 
