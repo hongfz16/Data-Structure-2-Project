@@ -1,0 +1,43 @@
+%!TEX program = xelatex
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{geometry}
+\usepackage{CJK}
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{pst-node}
+\usepackage{pst-text}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage[colorlinks]{hyperref}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{clrscode}
+\usepackage{amsthm}
+
+
+\title{Literature Review}
+\author{周展平\\2016013253\\Email: \href{mailto:zhouzp16@163.com}{zhouzp16@163.com}}
+\date{\today}
+\geometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+
+\begin{document}
+	\maketitle
+	\section{Deep learning of Binary Hash Codes for the Fast Image Retrieval}
+		\subsection{motivation}
+			在图像检索问题中，基于哈希的算法常常需要通过一个相似度矩阵来计算两幅图像之间的相似程度。然而，相似的矩阵的构建与计算会耗费大量的时间与空间资源。受到深度学习算法的启发，论文作者尝试利用深度学习提取哈希特征。
+		\subsection{framework}
+			整个算法由以下几部分组成：首先，训练ImageNet网络；然后在CNN的最后添加一层与产生哈希特征表示相关的神经网络层；最后，可以利用训练好的网络进行检索，检索的步骤为：（1）将图像输入到训练好的网络中，得到一个输出的向量 （2）将向量的每一维量化为0或1 (3)用Hamming距离衡量图像之间的相似程度，设置合适的阈值，得到candidate set （4）计算candidate set中的图像与查询图像的特征之间的距离，这里的特征是指神经网络输出的未经量化的向量。根据欧氏距离对图像进行排序输出。
+
+	\section{Class-Weighted Convoluntional Features for Visual Instance Search}
+		\subsection{motivation}
+			之前许多利用CNN进行图像检索的方法都需要针对给定的数据集进行fine-tune,一些研究也发现了网络中蕴含的有关空间信息的知识，然而对于用于fine-tune的数据集的处理花费大量的精力。论文作者希望仅仅使用网络中的知识完成fine-tune步骤。
+		\subsection{framework}
+			整个算法有以下几部分组成：首先，训练CNN网络；然后输入用于fine-tune的图像集，针对每一个类别利用CAM加权计算出新的特征，并通过求和池化增强效果；之后，对于特征向量中的维度加权计算出新的向量，以此减少通道冗余；最后，依次进行I2 normalization、PCA-whitening、I2 normalization，将各个类别得到的特征描述合并成一个向量。
+\end{document}

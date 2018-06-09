@@ -8,9 +8,9 @@
 #include <ctime>
 using namespace std;
 
-#define TESTNUM 5000
-#define MULT 20
-const int cdim = 24;
+#define TESTNUM 20000
+#define MULT 1
+const int cdim = 9;
 
 struct Datainfo
 {
@@ -61,10 +61,10 @@ struct Result
 vector<Pic> pics;
 Datainfo datainfo;
 
-RTree<Pic*, double, cdim> rt;
+RTree<Pic*, float, cdim> rt;
 
-//const string datafilename = "../../../Feature/ColorMoment/feature.txt";
-const string datafilename = "../../../Feature/ColorHistogram/colorhist.txt";
+const string datafilename = "../../../Feature/ColorMoment/feature.txt";
+//const string datafilename = "../../../Feature/ColorHistogram/colorhist.txt";
 void initdata()
 {
 	int idcount = 0;
@@ -159,32 +159,48 @@ Result testRtree(int objnum,int range)
 	set<int> chosenpics;
 	for (int i = 0; i < objnum; ++i)
 	{
-		int id = rand() % datainfo.datanum;
-		while (chosenpics.find(id) != chosenpics.end())
-		{
-			id = rand() % datainfo.datanum;
-		}
-		double cmin[cdim], cmax[cdim];
+		//int id = rand() % datainfo.datanum;
+		//while (chosenpics.find(id) != chosenpics.end())
+		//{
+		//	id = rand() % datainfo.datanum;
+		//}
+		//chosenpics.insert(id);
+		//float cmin[cdim], cmax[cdim];
+		//for (int j = 0; j < cdim; ++j)
+		//{
+		//	cmin[j] = cmax[j] = pics[id].dims[j];
+		//}
+		float cmin[cdim], cmax[cdim];
 		for (int j = 0; j < cdim; ++j)
 		{
-			cmin[j] = cmax[j] = pics[id].dims[j];
+			cmin[j] = cmax[j] = rand() % 50;
 		}
-		rt.Insert(cmin, cmax, &pics[id]);
+		rt.Insert(cmin, cmax, &pics[0]);
 	}
 	double alldisktime=0.0, allaccur=0.0, allrecall=0.0, resultnum = 0.0;
 	for (int i = 0; i < TESTNUM; ++i)
 	{
 		vector<int> resultid;
 		int id = rand() % datainfo.datanum;
-		double cmin[cdim], cmax[cdim];
+		//while (1)
+		//{
+		//	if (chosenpics.find(id) == chosenpics.end())
+		//		id = rand() % datainfo.datanum;
+		//	else
+		//		break;
+		//}
+		float cmin[cdim], cmax[cdim];
 		for (int j = 0; j < cdim; ++j)
 		{
-			cmin[j] = pics[id].dims[j] - range;
-			cmax[j] = pics[id].dims[j] + range;
-			if (pics[id].dims[j] - range < datainfo.minbound[j])
-				cmin[j] = datainfo.minbound[j];
-			if (pics[id].dims[j] + range > datainfo.maxbound[j])
-				cmax[j] = datainfo.maxbound[j];
+			//cmin[j] = pics[id].dims[j] - range;
+			//cmax[j] = pics[id].dims[j] + range;
+			//if (pics[id].dims[j] - range < datainfo.minbound[j])
+			//	cmin[j] = datainfo.minbound[j];
+			//if (pics[id].dims[j] + range > datainfo.maxbound[j])
+			//	cmax[j] = datainfo.maxbound[j];
+			int randnum = rand() % 50;
+			cmin[j] = randnum - range;
+			cmax[j] = randnum + range;
 		}
 		rt.Search(cmin, cmax, QueryResultCallback, resultid);
 		alldisktime += rt.disktime;
@@ -210,15 +226,16 @@ Result testRtree(int objnum,int range)
 int main()
 {
 	initdata();
-	int range = 500;
-	int objnum[5] = { 1000,2000,3000,4000,5000 };
-	for (int i = 0; i < 5; ++i)
+	int range = 20;
+	int objnum[5] = { 10000,20000,30000,40000,50000 };
+	for (int i = 0; i < 9; ++i)
 	{
 		Result result = testRtree(objnum[i], range);
 		cout << "Dimension: " << cdim << endl;
 		cout << "Object number: " << objnum[i] << endl;
 		cout << "Average Disk Time: " << result.disktime << endl;
-		cout << "Average Result Number: " << result.resultnum << endl;
+		cout << "Result Num: " << result.resultnum << endl;
+		cout << "Average Disk Time Per 100 Result: " << result.disktime / result.resultnum * 100 << endl;
 	}
 	return 0;
 }

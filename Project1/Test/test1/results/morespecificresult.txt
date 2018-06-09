@@ -1,0 +1,776 @@
+Dimension: 4
+Object number: 1000
+Average Disk Time: 53.4387
+Average Disk Time Per 100 Result: 106.974
+Dimension: 4
+Object number: 1500
+Average Disk Time: 77.2929
+Average Disk Time Per 100 Result: 107.394
+Dimension: 4
+Object number: 2000
+Average Disk Time: 98.0891
+Average Disk Time Per 100 Result: 103.633
+Dimension: 4
+Object number: 2500
+Average Disk Time: 118.39
+Average Disk Time Per 100 Result: 102.401
+Dimension: 4
+Object number: 3000
+Average Disk Time: 136.355
+Average Disk Time Per 100 Result: 95.5441
+Dimension: 4
+Object number: 3500
+Average Disk Time: 156.702
+Average Disk Time Per 100 Result: 93.8745
+Dimension: 4
+Object number: 4000
+Average Disk Time: 169.87
+Average Disk Time Per 100 Result: 93.303
+Dimension: 4
+Object number: 4500
+Average Disk Time: 189.299
+Average Disk Time Per 100 Result: 91.647
+Dimension: 4
+Object number: 5000
+Average Disk Time: 207.733
+Average Disk Time Per 100 Result: 89.9102
+
+Dimension: 5
+Object number: 1000
+Average Disk Time: 54.809
+Average Disk Time Per 100 Result: 142.339
+Dimension: 5
+Object number: 1500
+Average Disk Time: 77.165
+Average Disk Time Per 100 Result: 147.229
+Dimension: 5
+Object number: 2000
+Average Disk Time: 99.8461
+Average Disk Time Per 100 Result: 123.118
+Dimension: 5
+Object number: 2500
+Average Disk Time: 129.785
+Average Disk Time Per 100 Result: 127.794
+Dimension: 5
+Object number: 3000
+Average Disk Time: 150.29
+Average Disk Time Per 100 Result: 129.503
+Dimension: 5
+Object number: 3500
+Average Disk Time: 169.935
+Average Disk Time Per 100 Result: 125.817
+Dimension: 5
+Object number: 4000
+Average Disk Time: 184.787
+Average Disk Time Per 100 Result: 123.681
+Dimension: 5
+Object number: 4500
+Average Disk Time: 201.085
+Average Disk Time Per 100 Result: 121.402
+Dimension: 5
+Object number: 5000
+Average Disk Time: 222.88
+Average Disk Time Per 100 Result: 124.086
+
+Dimension: 6
+Object number: 1000
+Average Disk Time: 60.9347
+Average Disk Time Per 100 Result: 206.624
+Dimension: 6
+Object number: 1500
+Average Disk Time: 82.2481
+Average Disk Time Per 100 Result: 189.013
+Dimension: 6
+Object number: 2000
+Average Disk Time: 108.803
+Average Disk Time Per 100 Result: 175.298
+Dimension: 6
+Object number: 2500
+Average Disk Time: 124.455
+Average Disk Time Per 100 Result: 181.554
+Dimension: 6
+Object number: 3000
+Average Disk Time: 145.161
+Average Disk Time Per 100 Result: 182.883
+Dimension: 6
+Object number: 3500
+Average Disk Time: 163.784
+Average Disk Time Per 100 Result: 177.285
+Dimension: 6
+Object number: 4000
+Average Disk Time: 189.865
+Average Disk Time Per 100 Result: 170.631
+Dimension: 6
+Object number: 4500
+Average Disk Time: 207.414
+Average Disk Time Per 100 Result: 159.467
+Dimension: 6
+Object number: 5000
+Average Disk Time: 226.659
+Average Disk Time Per 100 Result: 158.636
+
+Dimension: 7
+Object number: 1000
+Average Disk Time: 59.7058
+Average Disk Time Per 100 Result: 280.587
+Dimension: 7
+Object number: 1500
+Average Disk Time: 80.162
+Average Disk Time Per 100 Result: 245.394
+Dimension: 7
+Object number: 2000
+Average Disk Time: 109.379
+Average Disk Time Per 100 Result: 236.748
+Dimension: 7
+Object number: 2500
+Average Disk Time: 129.493
+Average Disk Time Per 100 Result: 227.42
+Dimension: 7
+Object number: 3000
+Average Disk Time: 150.835
+Average Disk Time Per 100 Result: 224.92
+Dimension: 7
+Object number: 3500
+Average Disk Time: 204.766
+Average Disk Time Per 100 Result: 241.314
+Dimension: 7
+Object number: 4000
+Average Disk Time: 234.942
+Average Disk Time Per 100 Result: 237.346
+Dimension: 7
+Object number: 4500
+Average Disk Time: 262.384
+Average Disk Time Per 100 Result: 237.057
+Dimension: 7
+Object number: 5000
+Average Disk Time: 249.52
+Average Disk Time Per 100 Result: 193.72
+
+Dimension: 8
+Object number: 1000
+Average Disk Time: 60.1213
+Average Disk Time Per 100 Result: 254.928
+Dimension: 8
+Object number: 1500
+Average Disk Time: 82.4627
+Average Disk Time Per 100 Result: 238.878
+Dimension: 8
+Object number: 2000
+Average Disk Time: 109.387
+Average Disk Time Per 100 Result: 263.047
+Dimension: 8
+Object number: 2500
+Average Disk Time: 139.756
+Average Disk Time Per 100 Result: 291.298
+Dimension: 8
+Object number: 3000
+Average Disk Time: 169.711
+Average Disk Time Per 100 Result: 308.186
+Dimension: 8
+Object number: 3500
+Average Disk Time: 201
+Average Disk Time Per 100 Result: 313.23
+Dimension: 8
+Object number: 4000
+Average Disk Time: 223.849
+Average Disk Time Per 100 Result: 305.911
+Dimension: 8
+Object number: 4500
+Average Disk Time: 268.632
+Average Disk Time Per 100 Result: 325.941
+Dimension: 8
+Object number: 5000
+Average Disk Time: 297.403
+Average Disk Time Per 100 Result: 333.829
+
+Dimension: 9
+Object number: 1000
+Average Disk Time: 58.2831
+Average Disk Time Per 100 Result: 286.92
+Dimension: 9
+Object number: 1500
+Average Disk Time: 82.0646
+Average Disk Time Per 100 Result: 248.451
+Dimension: 9
+Object number: 2000
+Average Disk Time: 106.804
+Average Disk Time Per 100 Result: 252.541
+Dimension: 9
+Object number: 2500
+Average Disk Time: 129.009
+Average Disk Time Per 100 Result: 263.696
+Dimension: 9
+Object number: 3000
+Average Disk Time: 158.35
+Average Disk Time Per 100 Result: 292.798
+Dimension: 9
+Object number: 3500
+Average Disk Time: 180.89
+Average Disk Time Per 100 Result: 294.591
+Dimension: 9
+Object number: 4000
+Average Disk Time: 209.095
+Average Disk Time Per 100 Result: 306.58
+Dimension: 9
+Object number: 4500
+Average Disk Time: 237.617
+Average Disk Time Per 100 Result: 303.138
+Dimension: 9
+Object number: 5000
+Average Disk Time: 250.928
+Average Disk Time Per 100 Result: 294.288
+
+Dimension: 10
+Object number: 1000
+Average Disk Time: 58.1974
+Average Disk Time Per 100 Result: 352.326
+Dimension: 10
+Object number: 1500
+Average Disk Time: 81.4433
+Average Disk Time Per 100 Result: 313.815
+Dimension: 10
+Object number: 2000
+Average Disk Time: 106.8
+Average Disk Time Per 100 Result: 324.653
+Dimension: 10
+Object number: 2500
+Average Disk Time: 136.609
+Average Disk Time Per 100 Result: 332.915
+Dimension: 10
+Object number: 3000
+Average Disk Time: 156.826
+Average Disk Time Per 100 Result: 328.537
+Dimension: 10
+Object number: 3500
+Average Disk Time: 180.316
+Average Disk Time Per 100 Result: 313.197
+Dimension: 10
+Object number: 4000
+Average Disk Time: 209.934
+Average Disk Time Per 100 Result: 319.373
+Dimension: 10
+Object number: 4500
+Average Disk Time: 236.728
+Average Disk Time Per 100 Result: 321.503
+Dimension: 10
+Object number: 5000
+Average Disk Time: 282.192
+Average Disk Time Per 100 Result: 349.554
+
+Dimension: 11
+Object number: 1000
+Average Disk Time: 57.1851
+Average Disk Time Per 100 Result: 285.696
+Dimension: 11
+Object number: 1500
+Average Disk Time: 87.1643
+Average Disk Time Per 100 Result: 306.389
+Dimension: 11
+Object number: 2000
+Average Disk Time: 112.538
+Average Disk Time Per 100 Result: 318.616
+Dimension: 11
+Object number: 2500
+Average Disk Time: 136.115
+Average Disk Time Per 100 Result: 314.77
+Dimension: 11
+Object number: 3000
+Average Disk Time: 163.151
+Average Disk Time Per 100 Result: 332.083
+Dimension: 11
+Object number: 3500
+Average Disk Time: 186.733
+Average Disk Time Per 100 Result: 314.591
+Dimension: 11
+Object number: 4000
+Average Disk Time: 214.485
+Average Disk Time Per 100 Result: 361.411
+Dimension: 11
+Object number: 4500
+Average Disk Time: 237.479
+Average Disk Time Per 100 Result: 347.817
+Dimension: 11
+Object number: 5000
+Average Disk Time: 264.32
+Average Disk Time Per 100 Result: 330.05
+
+Dimension: 12
+Object number: 1000
+Average Disk Time: 54.7201
+Average Disk Time Per 100 Result: 264.803
+Dimension: 12
+Object number: 1500
+Average Disk Time: 76.865
+Average Disk Time Per 100 Result: 245.229
+Dimension: 12
+Object number: 2000
+Average Disk Time: 102.886
+Average Disk Time Per 100 Result: 255.999
+Dimension: 12
+Object number: 2500
+Average Disk Time: 126.809
+Average Disk Time Per 100 Result: 281.183
+Dimension: 12
+Object number: 3000
+Average Disk Time: 155.508
+Average Disk Time Per 100 Result: 296.231
+Dimension: 12
+Object number: 3500
+Average Disk Time: 179.859
+Average Disk Time Per 100 Result: 313.201
+Dimension: 12
+Object number: 4000
+Average Disk Time: 211.201
+Average Disk Time Per 100 Result: 309.939
+Dimension: 12
+Object number: 4500
+Average Disk Time: 233.5
+Average Disk Time Per 100 Result: 311.458
+Dimension: 12
+Object number: 5000
+Average Disk Time: 259.366
+Average Disk Time Per 100 Result: 316.376
+
+Dimension: 13
+Object number: 1000
+Average Disk Time: 58.0637
+Average Disk Time Per 100 Result: 378.84
+Dimension: 13
+Object number: 1500
+Average Disk Time: 83.8008
+Average Disk Time Per 100 Result: 343.158
+Dimension: 13
+Object number: 2000
+Average Disk Time: 101.291
+Average Disk Time Per 100 Result: 290.348
+Dimension: 13
+Object number: 2500
+Average Disk Time: 123.648
+Average Disk Time Per 100 Result: 305.362
+Dimension: 13
+Object number: 3000
+Average Disk Time: 152.048
+Average Disk Time Per 100 Result: 315.379
+Dimension: 13
+Object number: 3500
+Average Disk Time: 173.974
+Average Disk Time Per 100 Result: 296.075
+Dimension: 13
+Object number: 4000
+Average Disk Time: 207.171
+Average Disk Time Per 100 Result: 308.656
+Dimension: 13
+Object number: 4500
+Average Disk Time: 248.589
+Average Disk Time Per 100 Result: 347.776
+Dimension: 13
+Object number: 5000
+Average Disk Time: 270.5
+Average Disk Time Per 100 Result: 344.164
+
+Dimension: 14
+Object number: 1000
+Average Disk Time: 56.3677
+Average Disk Time Per 100 Result: 355.21
+Dimension: 14
+Object number: 1500
+Average Disk Time: 83.3184
+Average Disk Time Per 100 Result: 375.972
+Dimension: 14
+Object number: 2000
+Average Disk Time: 104.661
+Average Disk Time Per 100 Result: 376.703
+Dimension: 14
+Object number: 2500
+Average Disk Time: 128.788
+Average Disk Time Per 100 Result: 356.232
+Dimension: 14
+Object number: 3000
+Average Disk Time: 152.231
+Average Disk Time Per 100 Result: 350.585
+Dimension: 14
+Object number: 3500
+Average Disk Time: 179.83
+Average Disk Time Per 100 Result: 352.802
+Dimension: 14
+Object number: 4000
+Average Disk Time: 223.474
+Average Disk Time Per 100 Result: 345.742
+Dimension: 14
+Object number: 4500
+Average Disk Time: 251.901
+Average Disk Time Per 100 Result: 342.621
+Dimension: 14
+Object number: 5000
+Average Disk Time: 279.8
+Average Disk Time Per 100 Result: 356.004
+
+Dimension: 15
+Object number: 1000
+Average Disk Time: 58.8413
+Average Disk Time Per 100 Result: 404.565
+Dimension: 15
+Object number: 1500
+Average Disk Time: 86.2334
+Average Disk Time Per 100 Result: 385.621
+Dimension: 15
+Object number: 2000
+Average Disk Time: 115.346
+Average Disk Time Per 100 Result: 396.833
+Dimension: 15
+Object number: 2500
+Average Disk Time: 137.823
+Average Disk Time Per 100 Result: 359.56
+Dimension: 15
+Object number: 3000
+Average Disk Time: 168.946
+Average Disk Time Per 100 Result: 335.722
+Dimension: 15
+Object number: 3500
+Average Disk Time: 191.351
+Average Disk Time Per 100 Result: 325.634
+Dimension: 15
+Object number: 4000
+Average Disk Time: 217.991
+Average Disk Time Per 100 Result: 336.475
+Dimension: 15
+Object number: 4500
+Average Disk Time: 239.722
+Average Disk Time Per 100 Result: 332.188
+Dimension: 15
+Object number: 5000
+Average Disk Time: 263.754
+Average Disk Time Per 100 Result: 347.911
+
+Dimension: 16
+Object number: 1000
+Average Disk Time: 56.5304
+Average Disk Time Per 100 Result: 371.256
+Dimension: 16
+Object number: 1500
+Average Disk Time: 86.2013
+Average Disk Time Per 100 Result: 368.909
+Dimension: 16
+Object number: 2000
+Average Disk Time: 112.114
+Average Disk Time Per 100 Result: 362.888
+Dimension: 16
+Object number: 2500
+Average Disk Time: 137.389
+Average Disk Time Per 100 Result: 406.806
+Dimension: 16
+Object number: 3000
+Average Disk Time: 162.336
+Average Disk Time Per 100 Result: 380.124
+Dimension: 16
+Object number: 3500
+Average Disk Time: 191.172
+Average Disk Time Per 100 Result: 376.022
+Dimension: 16
+Object number: 4000
+Average Disk Time: 215.637
+Average Disk Time Per 100 Result: 379.306
+Dimension: 16
+Object number: 4500
+Average Disk Time: 240.077
+Average Disk Time Per 100 Result: 378.589
+Dimension: 16
+Object number: 5000
+Average Disk Time: 263.525
+Average Disk Time Per 100 Result: 361.956
+
+Dimension: 17
+Object number: 1000
+Average Disk Time: 62.1703
+Average Disk Time Per 100 Result: 371.306
+Dimension: 17
+Object number: 1500
+Average Disk Time: 87.3898
+Average Disk Time Per 100 Result: 379.862
+Dimension: 17
+Object number: 2000
+Average Disk Time: 119.081
+Average Disk Time Per 100 Result: 394.111
+Dimension: 17
+Object number: 2500
+Average Disk Time: 138.728
+Average Disk Time Per 100 Result: 375.193
+Dimension: 17
+Object number: 3000
+Average Disk Time: 165.876
+Average Disk Time Per 100 Result: 350.432
+Dimension: 17
+Object number: 3500
+Average Disk Time: 193.377
+Average Disk Time Per 100 Result: 361.214
+Dimension: 17
+Object number: 4000
+Average Disk Time: 224.846
+Average Disk Time Per 100 Result: 381.493
+Dimension: 17
+Object number: 4500
+Average Disk Time: 240.666
+Average Disk Time Per 100 Result: 364.661
+Dimension: 17
+Object number: 5000
+Average Disk Time: 265.157
+Average Disk Time Per 100 Result: 359.595
+
+Dimension: 18
+Object number: 1000
+Average Disk Time: 56.5429
+Average Disk Time Per 100 Result: 290.497
+Dimension: 18
+Object number: 1500
+Average Disk Time: 86.6222
+Average Disk Time Per 100 Result: 340.42
+Dimension: 18
+Object number: 2000
+Average Disk Time: 118.11
+Average Disk Time Per 100 Result: 334.271
+Dimension: 18
+Object number: 2500
+Average Disk Time: 143.658
+Average Disk Time Per 100 Result: 333.825
+Dimension: 18
+Object number: 3000
+Average Disk Time: 167.29
+Average Disk Time Per 100 Result: 350.187
+Dimension: 18
+Object number: 3500
+Average Disk Time: 192.914
+Average Disk Time Per 100 Result: 359.615
+Dimension: 18
+Object number: 4000
+Average Disk Time: 219.57
+Average Disk Time Per 100 Result: 363.984
+Dimension: 18
+Object number: 4500
+Average Disk Time: 251.487
+Average Disk Time Per 100 Result: 377.759
+Dimension: 18
+Object number: 5000
+Average Disk Time: 274.188
+Average Disk Time Per 100 Result: 374.563
+
+Dimension: 19
+Object number: 1000
+Average Disk Time: 57.1888
+Average Disk Time Per 100 Result: 424.304
+Dimension: 19
+Object number: 1500
+Average Disk Time: 89.0407
+Average Disk Time Per 100 Result: 426.891
+Dimension: 19
+Object number: 2000
+Average Disk Time: 105.943
+Average Disk Time Per 100 Result: 359.409
+Dimension: 19
+Object number: 2500
+Average Disk Time: 131.063
+Average Disk Time Per 100 Result: 336.424
+Dimension: 19
+Object number: 3000
+Average Disk Time: 150.916
+Average Disk Time Per 100 Result: 320.891
+Dimension: 19
+Object number: 3500
+Average Disk Time: 174.348
+Average Disk Time Per 100 Result: 343.714
+Dimension: 19
+Object number: 4000
+Average Disk Time: 214.146
+Average Disk Time Per 100 Result: 336.751
+Dimension: 19
+Object number: 4500
+Average Disk Time: 242.363
+Average Disk Time Per 100 Result: 339.414
+Dimension: 19
+Object number: 5000
+Average Disk Time: 268.954
+Average Disk Time Per 100 Result: 376.791
+
+Dimension: 20
+Object number: 1000
+Average Disk Time: 58.9612
+Average Disk Time Per 100 Result: 328.99
+Dimension: 20
+Object number: 1500
+Average Disk Time: 82.8968
+Average Disk Time Per 100 Result: 318.345
+Dimension: 20
+Object number: 2000
+Average Disk Time: 112.956
+Average Disk Time Per 100 Result: 366.156
+Dimension: 20
+Object number: 2500
+Average Disk Time: 138.866
+Average Disk Time Per 100 Result: 366.874
+Dimension: 20
+Object number: 3000
+Average Disk Time: 165.821
+Average Disk Time Per 100 Result: 382.999
+Dimension: 20
+Object number: 3500
+Average Disk Time: 181.772
+Average Disk Time Per 100 Result: 349.599
+Dimension: 20
+Object number: 4000
+Average Disk Time: 204.878
+Average Disk Time Per 100 Result: 345.688
+Dimension: 20
+Object number: 4500
+Average Disk Time: 228.106
+Average Disk Time Per 100 Result: 362.898
+Dimension: 20
+Object number: 5000
+Average Disk Time: 269.531
+Average Disk Time Per 100 Result: 387.064
+
+Dimension: 21
+Object number: 1000
+Average Disk Time: 54.3612
+Average Disk Time Per 100 Result: 412.573
+Dimension: 21
+Object number: 1500
+Average Disk Time: 78.0572
+Average Disk Time Per 100 Result: 310.982
+Dimension: 21
+Object number: 2000
+Average Disk Time: 106.057
+Average Disk Time Per 100 Result: 320.324
+Dimension: 21
+Object number: 2500
+Average Disk Time: 131.213
+Average Disk Time Per 100 Result: 333.705
+Dimension: 21
+Object number: 3000
+Average Disk Time: 151.523
+Average Disk Time Per 100 Result: 323.125
+Dimension: 21
+Object number: 3500
+Average Disk Time: 190.878
+Average Disk Time Per 100 Result: 374.726
+Dimension: 21
+Object number: 4000
+Average Disk Time: 216.687
+Average Disk Time Per 100 Result: 359.659
+Dimension: 21
+Object number: 4500
+Average Disk Time: 236.408
+Average Disk Time Per 100 Result: 350.525
+Dimension: 21
+Object number: 5000
+Average Disk Time: 241.213
+Average Disk Time Per 100 Result: 319.493
+
+Dimension: 22
+Object number: 1000
+Average Disk Time: 49.4902
+Average Disk Time Per 100 Result: 425.61
+Dimension: 22
+Object number: 1500
+Average Disk Time: 73.6442
+Average Disk Time Per 100 Result: 371.432
+Dimension: 22
+Object number: 2000
+Average Disk Time: 100.298
+Average Disk Time Per 100 Result: 366.949
+Dimension: 22
+Object number: 2500
+Average Disk Time: 135.054
+Average Disk Time Per 100 Result: 352.647
+Dimension: 22
+Object number: 3000
+Average Disk Time: 159.52
+Average Disk Time Per 100 Result: 350.407
+Dimension: 22
+Object number: 3500
+Average Disk Time: 186.443
+Average Disk Time Per 100 Result: 362.989
+Dimension: 22
+Object number: 4000
+Average Disk Time: 220.485
+Average Disk Time Per 100 Result: 367.126
+Dimension: 22
+Object number: 4500
+Average Disk Time: 246.953
+Average Disk Time Per 100 Result: 366.485
+Dimension: 22
+Object number: 5000
+Average Disk Time: 268.518
+Average Disk Time Per 100 Result: 369.876
+
+Dimension: 23
+Object number: 1000
+Average Disk Time: 56.5087
+Average Disk Time Per 100 Result: 380.746
+Dimension: 23
+Object number: 1500
+Average Disk Time: 81.0547
+Average Disk Time Per 100 Result: 363.036
+Dimension: 23
+Object number: 2000
+Average Disk Time: 98.9372
+Average Disk Time Per 100 Result: 350.801
+Dimension: 23
+Object number: 2500
+Average Disk Time: 119.687
+Average Disk Time Per 100 Result: 378.869
+Dimension: 23
+Object number: 3000
+Average Disk Time: 146.844
+Average Disk Time Per 100 Result: 363.822
+Dimension: 23
+Object number: 3500
+Average Disk Time: 170.722
+Average Disk Time Per 100 Result: 335.556
+Dimension: 23
+Object number: 4000
+Average Disk Time: 230.237
+Average Disk Time Per 100 Result: 386.092
+Dimension: 23
+Object number: 4500
+Average Disk Time: 252.816
+Average Disk Time Per 100 Result: 382.062
+Dimension: 23
+Object number: 5000
+Average Disk Time: 268.413
+Average Disk Time Per 100 Result: 358.261
+
+Dimension: 24
+Object number: 1000
+Average Disk Time: 53.2722
+Average Disk Time Per 100 Result: 298.318
+Dimension: 24
+Object number: 1500
+Average Disk Time: 78.5177
+Average Disk Time Per 100 Result: 277.991
+Dimension: 24
+Object number: 2000
+Average Disk Time: 106.411
+Average Disk Time Per 100 Result: 325.544
+Dimension: 24
+Object number: 2500
+Average Disk Time: 136.353
+Average Disk Time Per 100 Result: 418.5
+Dimension: 24
+Object number: 3000
+Average Disk Time: 160.881
+Average Disk Time Per 100 Result: 389.595
+Dimension: 24
+Object number: 3500
+Average Disk Time: 187.76
+Average Disk Time Per 100 Result: 378.413
+Dimension: 24
+Object number: 4000
+Average Disk Time: 218.478
+Average Disk Time Per 100 Result: 371.029
+Dimension: 24
+Object number: 4500
+Average Disk Time: 245.087
+Average Disk Time Per 100 Result: 391.005
+Dimension: 24
+Object number: 5000
+Average Disk Time: 246.134
+Average Disk Time Per 100 Result: 356.158

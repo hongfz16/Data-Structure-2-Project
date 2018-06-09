@@ -1,0 +1,47 @@
+%!TEX program = xelatex
+\documentclass[UTF8]{ctexart}
+\CTEXsetup[format={\Large\bfseries}]{section}
+\usepackage{fancyhdr}
+\usepackage{extramarks}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage[plain]{algorithm}
+\usepackage{algpseudocode}
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{geometry}
+
+\usepackage{CJK}
+\usepackage{booktabs}
+\usepackage{pst-node}
+\usepackage{pst-text}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage[colorlinks]{hyperref}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{clrscode}
+
+
+\title{Prob2 Doc}
+\author{李帅\\2016013270\\Email: \href{mailto:lishuai16THU@163.com}{lishuai16THU@163.com}}
+\date{\today}
+\geometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+
+\begin{document}
+  \maketitle
+  \section*{Problem2}
+  \indent颜色直方图是图像的一种颜色特征。图像的每种颜色都不是单一的，可以由几种单一独立的颜色混合而成。在给定的色彩空间上，将每个像素的颜色沿着不同的通道（每种通道表示一种单一的颜色分量）分离开，统计每种颜色分量的总数或者占所有颜色的比例，用直方图将统计结果表示出来即为颜色直方图。颜色直方图是图像的一种全局特征，他对于图像旋转、缩放、模糊等物理变换并不敏感，因此可以用来衡量和比较不同图像的全局差。但是这种全局特征也会导致像素点间的位置特征丢失，例如几幅整体色调相近的图片，但是颜色的分布完全不一样，这种情况下颜色直方图无法对其进行区分。
+
+  \indent本实验中使用在RGB颜色空间下提取颜色直方图作为特征。RGB颜色空间将颜色分解为红色（Red）、绿色（Green）、蓝色（Blue）三个分量，其中每个分量安亮度可分为256个等级。通过对每个颜色分量的每个亮度值的像素点数进行统计，便可得到3个256维的特征。之后再对每个通道的亮度值进行划分，将一定范围内的像素值归为一类，便能将256维特征压缩到更小的维数。本实验中使用的特征维数是3*3、3*5和3*8。3*3的特征将每个通道的亮度值划分为0-84,85-169,170-255三个范围，其他维数的特征划分与此类似。
+
+  \indent从查询结果所作的曲线图可以看出，随着查询点集的不断增大，维数为9维、15维、24维的颜色直方图作为特征的查询，准确度均不断提高，最终三种维数的查询准确度均稳定在0.25附近。这个准确率并不算太高，对此的分析正如上文所述，颜色直方图是全局的颜色统计特征，不能很好的表达颜色的空间分布，因此对于图形的形状不能很好的分辨，导致了查询准确率较低。
+
+  \indent另一方面，随着查询点集的增大，三个维数的查询准确率始终非常相近，没有拉开差距。对于这个问题的分析是，三个特征看似维度不一，但实际上都是由同样的3*256维向量经过不同的划分而得，因此三个特征包含的信息十分相近，故即使维数不同三者的查询结果也都较为相近。
+
+\end{document}
