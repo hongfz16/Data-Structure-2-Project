@@ -2,7 +2,7 @@ import os
 import argparse
 
 import numpy as np
-from scipy.spatial.distance import hamming, cdist
+# from scipy.spatial.distance import hamming, cdist
 from net import AlexNetPlusLatent
 
 from timeit import time
@@ -15,12 +15,34 @@ from torch.autograd import Variable
 import torch.backends.cudnn as cudnn
 import torch.optim.lr_scheduler
 
+from MyDataset import MyDataset
+
 parser = argparse.ArgumentParser(description='Deep Hashing evaluate mAP')
 parser.add_argument('--pretrained', type=int, default=0, metavar='pretrained_model',
                     help='loading pretrained model(default = None)')
 parser.add_argument('--bits', type=int, default=48, metavar='bts',
                     help='binary bits')
 args = parser.parse_args()
+
+root = './list/'
+
+def load_local_data():
+    transform_train = transforms.Compose(
+        [transforms.CenterCrop(227),
+         transforms.ToTensor(),
+         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
+    transform_test = transforms.Compose(
+        [transforms.CenterCrop(227),
+         transforms.ToTensor(),
+         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
+    trainset=MyDataset(txt=root+'trainlist.txt',transform=transform_train)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
+                                              shuffle=False, num_workers=2)
+
+    testset = MyDataset(txt=root+'testlist.txt',transform=transform_test)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=100,
+                                             shuffle=False, num_workers=2)
+    return trainloader, testloader
 
 def load_data():
     transform_train = transforms.Compose(
@@ -45,7 +67,7 @@ def load_data():
 def binary_output(dataloader):
     net = AlexNetPlusLatent(args.bits)
     #net.load_state_dict(torch.load('./model/%d' %args.pretrained))
-    net.load_state_dict(torch.load('./model/93.06',map_location='cpu'))
+    net.load_state_dict(torch.load('./model/82.9',map_location='cpu'))
     use_cuda = torch.cuda.is_available()
     if use_cuda:
         net.cuda()
@@ -96,7 +118,7 @@ if __name__ == '__main__':
         test_label = torch.load('./result/test_label')
 
     else:
-        trainloader, testloader = load_data()
+        trainloader, testloader = load_local_data()
         train_binary, train_label = binary_output(trainloader)
         test_binary, test_label = binary_output(testloader)
         if not os.path.isdir('result'):

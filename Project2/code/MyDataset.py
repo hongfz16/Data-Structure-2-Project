@@ -38,4 +38,4 @@ class MyDataset(Dataset):
     def __len__(self):
         return len(self.imgs)
 
-trainset = MyDataset(txt = root + 'list.txt', transform = transforms.ToTensor())
+# trainset = MyDataset(txt = root + 'list.txt', transform = transforms.ToTensor())
