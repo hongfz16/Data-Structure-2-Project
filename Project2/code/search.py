@@ -45,29 +45,33 @@ def load_data():
 
 def binary_output(dataloader):
     net = AlexNetPlusLatent(args.bits)
-    net.load_state_dict(torch.load('./model/82.9'))
+    net.load_state_dict(torch.load('./model/86.7'))
     use_cuda = torch.cuda.is_available()
     if use_cuda:
         net.cuda()
-    full_batch_output = torch.cuda.FloatTensor()
+    full_batch_hash = torch.cuda.FloatTensor()
     full_batch_label = torch.cuda.LongTensor()
+    full_batch_feature = torch.cuda.FloatTensor()
     net.eval()
     for batch_idx, (inputs, targets) in enumerate(dataloader):
         if use_cuda:
             inputs, targets = inputs.cuda(), targets.cuda()
         inputs, targets = Variable(inputs, volatile=True), Variable(targets)
-        outputs, _ = net(inputs)
-        full_batch_output = torch.cat((full_batch_output, outputs.data), 0)
+        hash,result,feature = net(inputs)
+        full_batch_hash = torch.cat((full_batch_hash, hash.data), 0)
         full_batch_label = torch.cat((full_batch_label, targets.data), 0)
-    return torch.round(full_batch_output), full_batch_label
+        full_batch_feature = torch.cat((full_batch_feature, feature.data), 0)
+    return torch.round(full_batch_hash), full_batch_label, full_batch_feature
 
-def precision(trn_binary, trn_label, tst_binary, tst_label):
+def precision(trn_binary, trn_label, trn_feature, tst_binary, tst_label, tst_feature):
     trn_binary = trn_binary.cpu().numpy()
     trn_binary = np.asarray(trn_binary, np.int32)
     trn_label = trn_label.cpu().numpy()
+    trn_feature = trn_feature.cpu().numpy()
     tst_binary = tst_binary.cpu().numpy()
     tst_binary = np.asarray(tst_binary, np.int32)
     tst_label = tst_label.cpu().numpy()
+    tst_feature = tst_feature.cpu().numpy()
     query_times = tst_binary.shape[0]
     trainset_len = train_binary.shape[0]
     AP = np.zeros(query_times)
@@ -88,23 +92,10 @@ def precision(trn_binary, trn_label, tst_binary, tst_label):
 
 
 if __name__ == '__main__':
-    if os.path.exists('./result/train_binary') and os.path.exists('./result/train_label') and \
-        os.path.exists('./result/test_binary') and os.path.exists('./result/test_label') and args.pretrained == 0:
-        train_binary = torch.load('./result/train_binary')
-        train_label = torch.load('./result/train_label')
-        test_binary = torch.load('./result/test_binary')
-        test_label = torch.load('./result/test_label')
-
-    else:
-        trainloader, testloader = load_data()
-        train_binary, train_label = binary_output(trainloader)
-        test_binary, test_label = binary_output(testloader)
-        if not os.path.isdir('result'):
-            os.mkdir('result')
-        torch.save(train_binary, './result/train_binary')
-        torch.save(train_label, './result/train_label')
-        torch.save(test_binary, './result/test_binary')
-        torch.save(test_label, './result/test_label')
-
-
-    precision(train_binary, train_label, test_binary, test_label)
+        train_binary = torch.load('./database/db_binary')
+        train_label = torch.load('./database/db_label')
+        train_feature = torch.load('./database/db_feature')
+        test_binary = train_binary
+        test_label = train_label
+        test_feature = train_feature
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature)
