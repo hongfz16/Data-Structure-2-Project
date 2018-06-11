@@ -4,7 +4,8 @@ from PIL import Image
 root = './data/image/'
 
 def default_loader(path):
-    return Image.open(path).convert('RGB')
+    # print(root + path)
+    return Image.open(root + path).convert('RGB')
 class MyDataset(Dataset):
     def __init__(self, txt, transform = None, target_transform = None,
                  loader = default_loader):
@@ -17,11 +18,13 @@ class MyDataset(Dataset):
             line = line.strip('\n')
             line = line.rstrip()
             words = line.split()
-            imgs.append((words[0], words[1]))
+            # imgs.append((words[0], words[1]))
+            # print(words[0], words[1])
             if words[1] != lastlabel:
                 lastlabel = words[1]
                 labelnum += 1
                 labeldic[lastlabel] = labelnum
+            imgs.append((words[0], labelnum))
         self.imgs = imgs
         self.transform = transform
         self.target_transform = target_transform
@@ -31,6 +34,7 @@ class MyDataset(Dataset):
     def __getitem__(self, index):
         fn, label = self.imgs[index]
         img = self.loader(fn)
+        # print(img)
         if self.transform is not None:
             img = self.transform(img)
         return img, label

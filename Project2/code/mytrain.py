@@ -11,6 +11,10 @@ from torchvision import datasets, models, transforms
 from torch.autograd import Variable
 import torch.optim.lr_scheduler
 
+from MyDataset import  MyDataset
+from PIL import Image
+
+root = './data/image/'
 
 parser = argparse.ArgumentParser(description='Deep Hashing')
 parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
@@ -36,16 +40,15 @@ transform_train = transforms.Compose(
      transforms.ToTensor(),
      transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
 transform_test = transforms.Compose(
-    [transforms.Resize(227),
+    [transforms.Resize(256),
+     transforms.CenterCrop(227),
      transforms.ToTensor(),
      transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
-trainset = datasets.CIFAR10(root='./data', train=True, download=True,
-                            transform=transform_train)
+trainset = MyDataset(txt = './data/image/trainlist.txt', transform = transform_train)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=128,
                                           shuffle=True, num_workers=2)
 
-testset = datasets.CIFAR10(root='./data', train=False, download=True,
-                           transform=transform_test)
+testset = MyDataset(txt = './data/image/testlist.txt', transform = transform_train)
 testloader = torch.utils.data.DataLoader(testset, batch_size=100,
                                          shuffle=True, num_workers=2)
 
@@ -69,7 +72,7 @@ def train(epoch):
     correct = 0
     total = 0
     for batch_idx, (inputs, targets) in enumerate(trainloader):
-        print(inputs, targets)
+        # print(inputs, targets)
         if use_cuda:
             inputs, targets = inputs.cuda(), targets.cuda()
         inputs, targets = Variable(inputs), Variable(targets)
@@ -96,6 +99,7 @@ def test():
     correct = 0
     total = 0
     for batch_idx, (inputs, targets) in enumerate(testloader):
+        # print(inputs, targets)
         if use_cuda:
             inputs, targets = inputs.cuda(), targets.cuda()
         inputs, targets = Variable(inputs), Variable(targets)

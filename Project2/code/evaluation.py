@@ -14,6 +14,8 @@ from torch.autograd import Variable
 import torch.backends.cudnn as cudnn
 import torch.optim.lr_scheduler
 
+from MyDataset import MyDataset
+
 parser = argparse.ArgumentParser(description='Deep Hashing evaluate mAP')
 parser.add_argument('--pretrained', type=str, default=0, metavar='pretrained_model',
                     help='loading pretrained model(default = None)')
@@ -23,29 +25,49 @@ parser.add_argument('--path', type=str, default='model', metavar='P',
                     help='path directory')
 args = parser.parse_args()
 
+# def load_data():
+#     transform_train = transforms.Compose(
+#         [transforms.Resize(227),
+#          transforms.CenterCrop(227),
+#          transforms.ToTensor(),
+#          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
+#     transform_test = transforms.Compose(
+#         [transforms.Resize(227),
+#          transforms.CenterCrop(227),
+#          transforms.ToTensor(),
+#          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
+#     trainset = MyDataset(txt='./data/image/trainlist.txt', transform=transform_train)
+#     trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
+#                                               shuffle=False, num_workers=2)
+
+#     testset = MyDataset(txt='./data/image/testlist.txt', transform=transform_test)
+#     testloader = torch.utils.data.DataLoader(testset, batch_size=100,
+#                                              shuffle=False, num_workers=2)
+    # return trainloader, testloader
+
 def load_data():
     transform_train = transforms.Compose(
         [transforms.Resize(227),
+         transforms.CenterCrop(227),
          transforms.ToTensor(),
          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
     transform_test = transforms.Compose(
         [transforms.Resize(227),
+         transforms.CenterCrop(227),
          transforms.ToTensor(),
          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
-    trainset = datasets.CIFAR10(root='./data', train=True, download=True,
-                                transform=transform_train)
+    trainset = MyDataset(txt='./data/image/trainlist.txt', transform=transform_train)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
                                               shuffle=False, num_workers=2)
 
-    testset = datasets.CIFAR10(root='./data', train=False, download=True,
-                               transform=transform_test)
+    testset = MyDataset(txt='./data/image/testlist.txt', transform=transform_test)
     testloader = torch.utils.data.DataLoader(testset, batch_size=100,
                                              shuffle=False, num_workers=2)
     return trainloader, testloader
 
 def binary_output(dataloader):
     net = AlexNetPlusLatent(args.bits)
-    net.load_state_dict(torch.load('./{}/{}'.format(args.path, args.pretrained)))
+    net.load_state_dict(torch.load('./model/82.9'))
     use_cuda = torch.cuda.is_available()
     if use_cuda:
         net.cuda()
@@ -103,25 +125,25 @@ def precision(trn_binary, trn_label, tst_binary, tst_label):
     map = np.mean(AP)
     print('mAP:', map)
 
+if __name__ == '__main__':
+
+    if os.path.exists('./result/train_binary') and os.path.exists('./result/train_label') and \
+         os.path.exists('./result/test_binary') and os.path.exists('./result/test_label') and args.pretrained == 0:
+        train_binary = torch.load('./result/train_binary')
+        train_label = torch.load('./result/train_label')
+        test_binary = torch.load('./result/test_binary')
+        test_label = torch.load('./result/test_label')
+
+    else:
+        trainloader, testloader = load_data()
+        train_binary, train_label = binary_output(trainloader)
+        test_binary, test_label = binary_output(testloader)
+        if not os.path.isdir('result'):
+            os.mkdir('result')
+        torch.save(train_binary, './result/train_binary')
+        torch.save(train_label, './result/train_label')
+        torch.save(test_binary, './result/test_binary')
+        torch.save(test_label, './result/test_label')
 
 
-if os.path.exists('./result/train_binary') and os.path.exists('./result/train_label') and \
-   os.path.exists('./result/test_binary') and os.path.exists('./result/test_label') and args.pretrained == 0:
-    train_binary = torch.load('./result/train_binary')
-    train_label = torch.load('./result/train_label')
-    test_binary = torch.load('./result/test_binary')
-    test_label = torch.load('./result/test_label')
-
-else:
-    trainloader, testloader = load_data()
-    train_binary, train_label = binary_output(trainloader)
-    test_binary, test_label = binary_output(testloader)
-    if not os.path.isdir('result'):
-        os.mkdir('result')
-    torch.save(train_binary, './result/train_binary')
-    torch.save(train_label, './result/train_label')
-    torch.save(test_binary, './result/test_binary')
-    torch.save(test_label, './result/test_label')
-
-
-precision(train_binary, train_label, test_binary, test_label)
+    precision(train_binary, train_label, test_binary, test_label)
