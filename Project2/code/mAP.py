@@ -71,7 +71,7 @@ def load_data():
 def binary_output(dataloader):
     net = AlexNetPlusLatent(args.bits)
     #net.load_state_dict(torch.load('./model/%d' %args.pretrained))
-    net.load_state_dict(torch.load('./model/82.9',map_location='cpu'))
+    net.load_state_dict(torch.load('./model/86.7',map_location='cpu'))
 
     use_cuda = torch.cuda.is_available()
     if use_cuda:
@@ -148,16 +148,16 @@ if __name__ == '__main__':
     tst_binary = np.asarray(test_binary, np.int32)
     tst_label = test_label.cpu().numpy()
 
-    # precision(train_binary, train_label, test_binary, test_label)
-    num=888
-    ans=single_query(tst_binary[num],tst_label[num],train_binary,train_label)
-    test_fn,label=testset.imgs[num]
-    img=Image.open('./data/image/'+test_fn).convert('RGB')
-    plt.subplot(4,4,1)
-    plt.imshow(img)
-    for i in range(len(ans)):
-        fn,label=trainset.imgs[ans[i]]
-        img=Image.open('./data/image/'+fn).convert('RGB')
-        plt.subplot(4,4,2+i)
-        plt.imshow(img)
-    plt.show()
+    precision(train_binary, train_label, test_binary, test_label)
+    # num=888
+    # ans=single_query(tst_binary[num],tst_label[num],train_binary,train_label)
+    # test_fn,label=testset.imgs[num]
+    # img=Image.open('./data/image/'+test_fn).convert('RGB')
+    # plt.subplot(4,4,1)
+    # plt.imshow(img)
+    # for i in range(len(ans)):
+    #     fn,label=trainset.imgs[ans[i]]
+    #     img=Image.open('./data/image/'+fn).convert('RGB')
+    #     plt.subplot(4,4,2+i)
+    #     plt.imshow(img)
+    # plt.show()

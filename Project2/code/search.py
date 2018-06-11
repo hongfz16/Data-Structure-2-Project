@@ -2,7 +2,7 @@ import os
 import argparse
 
 import numpy as np
-from scipy.spatial.distance import hamming, cdist
+# from scipy.spatial.distance import hamming, cdist
 from net import AlexNetPlusLatent
 
 from timeit import time
@@ -67,8 +67,11 @@ def EuclideanDistance(vec1,vec2):
     dist = np.sqrt(np.sum(np.square(vec1 - vec2)))
     return dist
 
-def cmp(a,b):
+def mcmp(a,b):
     return a<b
+
+def takeSecond(a):
+    return a[1]
 
 def precision(trn_binary, trn_label, trn_feature, tst_binary, tst_label, tst_feature, HAMMINGDIS, QUERYNUM):
     trn_binary = trn_binary.cpu().numpy()
@@ -83,27 +86,46 @@ def precision(trn_binary, trn_label, trn_feature, tst_binary, tst_label, tst_fea
     trainset_len = train_binary.shape[0]
     # AP = np.zeros(query_times)
     # Ns = np.arange(1, trainset_len + 1)
+    toptenacc=0
+    candinum=0
     total_time_start = time.time()
     for i in range(query_times):
-        print('Query ', i+1)
+        # print('Query ', i+1)
         query_label = tst_label[i]
         query_binary = tst_binary[i,:]
         query_result = np.count_nonzero(query_binary != trn_binary, axis=1)    #don't need to divide binary length
         sort_indices = np.argsort(query_result)
-        candidate = np.array()
+        candidate = []
         for j in sort_indices:
             if(query_result[j] < HAMMINGDIS):
-                candidate = np.append(candidate,(j,EuclideanDistance(train_feature[j],test_feature[i])))
+                candidate.append((j,EuclideanDistance(trn_feature[j],tst_feature[i])))
             else:
                 break
-        query_ans = sorted(candidate,cmp = lambda x,y: cmp(x[1],y[1]))
-        for i in np.array(0,np.min(QUERYNUM,query_ans.__len__())):
+        candidate.sort(key=takeSecond)
+        # query_ans = sorted(candidate,cmp = lambda x,y: mcmp(x[1],y[1]))
+        # print(candidate)
+        # for i in np.array(0,np.min(QUERYNUM,query_ans.__len__())):
         #     todo!
+        num=min(QUERYNUM,len(candidate))
+        candinum+=len(candidate)
+        if num==0:
+            continue
+        correct=0
+        for i in range(num):
+            candi_label=trn_label[candidate[i][0]]
+            if candi_label==query_label:
+                correct+=1
+        toptenacc+=correct/num
         # buffer_yes= np.equal(query_label, trn_label[sort_indices]).astype(int)
         # P = np.cumsum(buffer_yes) / Ns
         # AP[i] = np.sum(P * buffer_yes) /sum(buffer_yes)
     # map = np.mean(AP)
     # print(map)
+    toptenacc/=query_times
+    candinum/=query_times
+    print('Hamming Dist: ',HAMMINGDIS)
+    print('Average candidate num: ',candinum)
+    print('Average top ten acc: ', toptenacc)
     print('total query time = ', time.time() - total_time_start)
 
 
@@ -111,7 +133,29 @@ if __name__ == '__main__':
         train_binary = torch.load('./database/db_binary')
         train_label = torch.load('./database/db_label')
         train_feature = torch.load('./database/db_feature')
-        test_binary = train_binary
-        test_label = train_label
-        test_feature = train_feature
-        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature)
+        test_binary = torch.load('./database/test_binary')
+        test_label = torch.load('./database/test_label')
+        test_feature = torch.load('./database/test_feature')
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 1, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 2, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 3, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 4, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 5, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 6, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 7, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 8, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 9, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 10, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 11, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 12, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 13, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 14, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 15, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 16, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 17, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 19, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 20, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 21, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 22, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 23, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 24, 10)
