@@ -37,7 +37,7 @@ def load_data():
 
 def getDatabase(dataloader):
     net = AlexNetPlusLatent(args.bits)
-    net.load_state_dict(torch.load('./model/82.9'))
+    net.load_state_dict(torch.load('./model/86.7'))
     use_cuda = torch.cuda.is_available()
     if use_cuda:
         net.cuda()
