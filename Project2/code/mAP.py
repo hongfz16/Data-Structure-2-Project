@@ -14,6 +14,7 @@ from torchvision import datasets, models, transforms
 from torch.autograd import Variable
 import torch.backends.cudnn as cudnn
 import torch.optim.lr_scheduler
+from MyDataset import MyDataset
 
 parser = argparse.ArgumentParser(description='Deep Hashing evaluate mAP')
 parser.add_argument('--pretrained', type=int, default=0, metavar='pretrained_model',
@@ -24,33 +25,32 @@ args = parser.parse_args()
 
 def load_data():
     transform_train = transforms.Compose(
-        [transforms.Scale(227),
+        [transforms.Resize(227),
+         transforms.CenterCrop(227),
          transforms.ToTensor(),
          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
     transform_test = transforms.Compose(
-        [transforms.Scale(227),
+        [transforms.Resize(227),
+         transforms.CenterCrop(227),
          transforms.ToTensor(),
          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
-    trainset = datasets.CIFAR10(root='./data', train=True, download=True,
-                                transform=transform_train)
+    trainset = MyDataset(txt='./data/image/trainlist.txt', transform=transform_train)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
                                               shuffle=False, num_workers=2)
 
-    testset = datasets.CIFAR10(root='./data', train=False, download=True,
-                               transform=transform_test)
+    testset = MyDataset(txt='./data/image/testlist.txt', transform=transform_test)
     testloader = torch.utils.data.DataLoader(testset, batch_size=100,
                                              shuffle=False, num_workers=2)
     return trainloader, testloader
 
 def binary_output(dataloader):
     net = AlexNetPlusLatent(args.bits)
-    #net.load_state_dict(torch.load('./model/%d' %args.pretrained))
-    net.load_state_dict(torch.load('./model/93.06',map_location='cpu'))
+    net.load_state_dict(torch.load('./model/82.9'))
     use_cuda = torch.cuda.is_available()
     if use_cuda:
         net.cuda()
-    full_batch_output = torch.FloatTensor()
-    full_batch_label = torch.LongTensor()
+    full_batch_output = torch.cuda.FloatTensor()
+    full_batch_label = torch.cuda.LongTensor()
     net.eval()
     for batch_idx, (inputs, targets) in enumerate(dataloader):
         if use_cuda:
@@ -86,10 +86,10 @@ def precision(trn_binary, trn_label, tst_binary, tst_label):
     print(map)
     print('total query time = ', time.time() - total_time_start)
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     if os.path.exists('./result/train_binary') and os.path.exists('./result/train_label') and \
-       os.path.exists('./result/test_binary') and os.path.exists('./result/test_label') and args.pretrained == 0:
+        os.path.exists('./result/test_binary') and os.path.exists('./result/test_label') and args.pretrained == 0:
         train_binary = torch.load('./result/train_binary')
         train_label = torch.load('./result/train_label')
         test_binary = torch.load('./result/test_binary')
