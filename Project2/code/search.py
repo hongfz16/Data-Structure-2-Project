@@ -63,7 +63,14 @@ def binary_output(dataloader):
         full_batch_feature = torch.cat((full_batch_feature, feature.data), 0)
     return torch.round(full_batch_hash), full_batch_label, full_batch_feature
 
-def precision(trn_binary, trn_label, trn_feature, tst_binary, tst_label, tst_feature):
+def EuclideanDistance(vec1,vec2):
+    dist = np.sqrt(np.sum(np.square(vec1 - vec2)))
+    return dist
+
+def cmp(a,b):
+    return a<b
+
+def precision(trn_binary, trn_label, trn_feature, tst_binary, tst_label, tst_feature, HAMMINGDIS, QUERYNUM):
     trn_binary = trn_binary.cpu().numpy()
     trn_binary = np.asarray(trn_binary, np.int32)
     trn_label = trn_label.cpu().numpy()
@@ -74,8 +81,8 @@ def precision(trn_binary, trn_label, trn_feature, tst_binary, tst_label, tst_fea
     tst_feature = tst_feature.cpu().numpy()
     query_times = tst_binary.shape[0]
     trainset_len = train_binary.shape[0]
-    AP = np.zeros(query_times)
-    Ns = np.arange(1, trainset_len + 1)
+    # AP = np.zeros(query_times)
+    # Ns = np.arange(1, trainset_len + 1)
     total_time_start = time.time()
     for i in range(query_times):
         print('Query ', i+1)
@@ -83,11 +90,20 @@ def precision(trn_binary, trn_label, trn_feature, tst_binary, tst_label, tst_fea
         query_binary = tst_binary[i,:]
         query_result = np.count_nonzero(query_binary != trn_binary, axis=1)    #don't need to divide binary length
         sort_indices = np.argsort(query_result)
-        buffer_yes= np.equal(query_label, trn_label[sort_indices]).astype(int)
-        P = np.cumsum(buffer_yes) / Ns
-        AP[i] = np.sum(P * buffer_yes) /sum(buffer_yes)
-    map = np.mean(AP)
-    print(map)
+        candidate = np.array()
+        for j in sort_indices:
+            if(query_result[j] < HAMMINGDIS):
+                candidate = np.append(candidate,(j,EuclideanDistance(train_feature[j],test_feature[i])))
+            else:
+                break
+        query_ans = sorted(candidate,cmp = lambda x,y: cmp(x[1],y[1]))
+        for i in np.array(0,np.min(QUERYNUM,query_ans.__len__())):
+        #     todo!
+        # buffer_yes= np.equal(query_label, trn_label[sort_indices]).astype(int)
+        # P = np.cumsum(buffer_yes) / Ns
+        # AP[i] = np.sum(P * buffer_yes) /sum(buffer_yes)
+    # map = np.mean(AP)
+    # print(map)
     print('total query time = ', time.time() - total_time_start)
 
 
