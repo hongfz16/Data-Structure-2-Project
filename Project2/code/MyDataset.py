@@ -1,7 +1,7 @@
 from torchvision import transforms
 from torch.utils.data import Dataset
 from PIL import Image
-root = 'H:\python\cvpr\pytorch_deephash\data\image\\'
+root = 'H:\python\cvpr\pytorch_deephash\ProjectTestData\ir\ir\\'
 
 def default_loader(path):
     # print(root + path)

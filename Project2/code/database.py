@@ -19,7 +19,7 @@ from MyDataset import MyDataset
 parser = argparse.ArgumentParser(description='Deep Hashing evaluate mAP')
 parser.add_argument('--pretrained', type=int, default=0, metavar='pretrained_model',
                     help='loading pretrained model(default = None)')
-parser.add_argument('--bits', type=int, default=64, metavar='bts',
+parser.add_argument('--bits', type=int, default=48, metavar='bts',
                     help='binary bits')
 args = parser.parse_args()
 
@@ -29,7 +29,7 @@ def load_data():
          transforms.CenterCrop(227),
          transforms.ToTensor(),
          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
-    dbset = MyDataset(txt='H:\python\cvpr\pytorch_deephash\data\image\\trainlist.txt', transform=transform_train)
+    dbset = MyDataset(txt='H:\python\cvpr\pytorch_deephash\ProjectTestData\ir\ir\list.txt', transform=transform_train)
     dbloader = torch.utils.data.DataLoader(dbset, batch_size=100,
                                               shuffle=False, num_workers=2)
 
@@ -37,7 +37,7 @@ def load_data():
 
 def getDatabase(dataloader):
     net = AlexNetPlusLatent(args.bits)
-    net.load_state_dict(torch.load('H:\python\cvpr\pytorch_deephash\model\86.6',map_location='cpu'))
+    net.load_state_dict(torch.load('G:\model\86.7',map_location='cpu'))
     use_cuda = torch.cuda.is_available()
     if use_cuda:
         net.cuda()
@@ -61,9 +61,9 @@ if __name__ == '__main__':
         db_binary, db_label, db_feature = getDatabase(dbloader)
         if not os.path.isdir('database'):
             os.mkdir('database')
-        # torch.save(db_binary, './database/db_binary')
-        # torch.save(db_label, './database/db_label')
-        # torch.save(db_feature, './database/db_feature') 
-        torch.save(db_binary, './database/train_binary')
-        torch.save(db_label, './database/train_label')
-        torch.save(db_feature, './database/train_feature')
+        torch.save(db_binary, './database/new_test_binary')
+        torch.save(db_label, './database/new_test_label')
+        torch.save(db_feature, './database/new_test_feature')
+        # torch.save(db_binary, './database/train_binary')
+        # torch.save(db_label, './database/train_label')
+        # torch.save(db_feature, './database/train_feature')
