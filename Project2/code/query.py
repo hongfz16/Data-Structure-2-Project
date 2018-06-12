@@ -116,9 +116,9 @@ def query(trn_binary, trn_feature, tst_binary, tst_feature, HAMMINGDIS, QUERYNUM
                 break
         candidate.sort(key=takeSecond)
         num=min(QUERYNUM,len(candidate))
-        resultfd.write(query_name[i],' ')
+        resultfd.write(query_name[i],':')
         for k in range(num):
-            resultfd.write(db_name[candidate[k][0]],' ')
+            resultfd.write(db_name[candidate[k][0]],',')
         resultfd.write("\n")
     print('Hamming Dist: ',HAMMINGDIS)
     print('Average candidate num: ',candinum)
