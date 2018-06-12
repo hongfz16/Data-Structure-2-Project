@@ -19,7 +19,7 @@ from MyDataset import MyDataset
 parser = argparse.ArgumentParser(description='Deep Hashing evaluate mAP')
 parser.add_argument('--pretrained', type=int, default=0, metavar='pretrained_model',
                     help='loading pretrained model(default = None)')
-parser.add_argument('--bits', type=int, default=48, metavar='bts',
+parser.add_argument('--bits', type=int, default=64, metavar='bts',
                     help='binary bits')
 args = parser.parse_args()
 
@@ -34,18 +34,18 @@ def load_data():
          transforms.CenterCrop(227),
          transforms.ToTensor(),
          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
-    trainset = MyDataset(txt='./data/image/trainlist.txt', transform=transform_train)
+    trainset = MyDataset(txt='H:\python\cvpr\pytorch_deephash\model\\trainlist.txt', transform=transform_train)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
                                               shuffle=False, num_workers=2)
 
-    testset = MyDataset(txt='./data/image/testlist.txt', transform=transform_test)
+    testset = MyDataset(txt='H:\python\cvpr\pytorch_deephash\model\\testlist.txt', transform=transform_test)
     testloader = torch.utils.data.DataLoader(testset, batch_size=100,
                                              shuffle=False, num_workers=2)
     return trainloader, testloader
 
 def binary_output(dataloader):
     net = AlexNetPlusLatent(args.bits)
-    net.load_state_dict(torch.load('./model/86.7'))
+    net.load_state_dict(torch.load('H:\python\cvpr\pytorch_deephash\model\\86.6'))
     use_cuda = torch.cuda.is_available()
     if use_cuda:
         net.cuda()
@@ -130,9 +130,9 @@ def precision(trn_binary, trn_label, trn_feature, tst_binary, tst_label, tst_fea
 
 
 if __name__ == '__main__':
-        train_binary = torch.load('./database/db_binary')
-        train_label = torch.load('./database/db_label')
-        train_feature = torch.load('./database/db_feature')
+        train_binary = torch.load('./database/train_binary')
+        train_label = torch.load('./database/train_label')
+        train_feature = torch.load('./database/train_feature')
         test_binary = torch.load('./database/test_binary')
         test_label = torch.load('./database/test_label')
         test_feature = torch.load('./database/test_feature')
@@ -153,6 +153,7 @@ if __name__ == '__main__':
         precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 15, 10)
         precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 16, 10)
         precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 17, 10)
+        precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 18, 10)
         precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 19, 10)
         precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 20, 10)
         precision(train_binary, train_label, train_feature, test_binary, test_label, test_feature, 21, 10)

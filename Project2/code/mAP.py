@@ -59,11 +59,11 @@ def load_data():
          transforms.CenterCrop(227),
          transforms.ToTensor(),
          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
-    trainset = MyDataset(txt='./data/image/trainlist.txt', transform=transform_train)
+    trainset = MyDataset(txt='H:\python\cvpr\pytorch_deephash\data\image\\trainlist.txt', transform=transform_train)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
                                               shuffle=False, num_workers=2)
 
-    testset = MyDataset(txt='./data/image/testlist.txt', transform=transform_test)
+    testset = MyDataset(txt='H:\python\cvpr\pytorch_deephash\data\image\\testlist.txt', transform=transform_test)
     testloader = torch.utils.data.DataLoader(testset, batch_size=100,
                                              shuffle=False, num_workers=2)
     return trainloader, testloader
@@ -71,13 +71,13 @@ def load_data():
 def binary_output(dataloader):
     net = AlexNetPlusLatent(args.bits)
     #net.load_state_dict(torch.load('./model/%d' %args.pretrained))
-    net.load_state_dict(torch.load('./model/86.7',map_location='cpu'))
+    net.load_state_dict(torch.load('G:\model\86.7'))
 
     use_cuda = torch.cuda.is_available()
     if use_cuda:
         net.cuda()
-    full_batch_output = torch.FloatTensor()
-    full_batch_label = torch.LongTensor()
+    full_batch_output = torch.cuda.FloatTensor()
+    full_batch_label = torch.cuda.LongTensor()
     net.eval()
     for batch_idx, (inputs, targets) in enumerate(dataloader):
         if use_cuda:

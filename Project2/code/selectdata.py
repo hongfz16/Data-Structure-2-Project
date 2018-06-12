@@ -1,3 +1,4 @@
+import os
 import random
 
 imagelist = open('./data/image/list.txt', 'r')
