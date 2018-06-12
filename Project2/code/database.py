@@ -30,7 +30,7 @@ def load_data():
          transforms.ToTensor(),
          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
     dbset = MyDataset(txt='H:\python\cvpr\pytorch_deephash\ProjectTestData\ir\ir\list.txt', transform=transform_train)
-    dbloader = torch.utils.data.DataLoader(dbset, batch_size=100,
+    dbloader = torch.utils.data.DataLoader(dbset, batch_size=1,
                                               shuffle=False, num_workers=2)
 
     return dbloader
@@ -61,9 +61,9 @@ if __name__ == '__main__':
         db_binary, db_label, db_feature = getDatabase(dbloader)
         if not os.path.isdir('database'):
             os.mkdir('database')
-        torch.save(db_binary, './database/new_test_binary')
-        torch.save(db_label, './database/new_test_label')
-        torch.save(db_feature, './database/new_test_feature')
+        torch.save(db_binary, './query/query_binary')
+        torch.save(db_label, './query/query_label')
+        torch.save(db_feature, './query/query_feature')
         # torch.save(db_binary, './database/train_binary')
         # torch.save(db_label, './database/train_label')
         # torch.save(db_feature, './database/train_feature')

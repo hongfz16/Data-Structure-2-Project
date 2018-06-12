@@ -25,7 +25,7 @@ class MyDataset(Dataset):
                     lastlabel = words[1]
                     labelnum += 1
                     labeldic[lastlabel] = labelnum
-                imgs.append((words[0], labelnum))
+            imgs.append((words[0], labelnum))
         self.imgs = imgs
         self.transform = transform
         self.target_transform = target_transform

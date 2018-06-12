@@ -1,20 +1,8 @@
-import os
 import argparse
-
 import numpy as np
-# from scipy.spatial.distance import hamming, cdist
-from net import AlexNetPlusLatent
-
 from timeit import time
-
 import torch
-import torch.nn as nn
-
-from torchvision import datasets, models, transforms
-from torch.autograd import Variable
-import torch.backends.cudnn as cudnn
-import torch.optim.lr_scheduler
-from MyDataset import MyDataset
+import os
 
 parser = argparse.ArgumentParser(description='Deep Hashing evaluate mAP')
 parser.add_argument('--pretrained', type=int, default=0, metavar='pretrained_model',
@@ -22,26 +10,6 @@ parser.add_argument('--pretrained', type=int, default=0, metavar='pretrained_mod
 parser.add_argument('--bits', type=int, default=64, metavar='bts',
                     help='binary bits')
 args = parser.parse_args()
-
-def load_data():
-    transform_train = transforms.Compose(
-        [transforms.Resize(227),
-         transforms.CenterCrop(227),
-         transforms.ToTensor(),
-         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
-    transform_test = transforms.Compose(
-        [transforms.Resize(227),
-         transforms.CenterCrop(227),
-         transforms.ToTensor(),
-         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
-    trainset = MyDataset(txt='H:\python\cvpr\pytorch_deephash\model\\trainlist.txt', transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
-                                              shuffle=False, num_workers=2)
-
-    testset = MyDataset(txt='H:\python\cvpr\pytorch_deephash\model\\testlist.txt', transform=transform_test)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=100,
-                                             shuffle=False, num_workers=2)
-    return trainloader, testloader
 
 def readImgNames():
     db_list = open("./list/dblist.txt",'r')
@@ -61,26 +29,6 @@ def readImgNames():
     return db_name, query_name
 
 db_name, query_name = readImgNames()
-
-def binary_output(dataloader):
-    net = AlexNetPlusLatent(args.bits)
-    net.load_state_dict(torch.load('H:\python\cvpr\pytorch_deephash\model\\86.6'))
-    use_cuda = torch.cuda.is_available()
-    if use_cuda:
-        net.cuda()
-    full_batch_hash = torch.cuda.FloatTensor()
-    full_batch_label = torch.cuda.LongTensor()
-    full_batch_feature = torch.cuda.FloatTensor()
-    net.eval()
-    for batch_idx, (inputs, targets) in enumerate(dataloader):
-        if use_cuda:
-            inputs, targets = inputs.cuda(), targets.cuda()
-        inputs, targets = Variable(inputs, volatile=True), Variable(targets)
-        hash,result,feature = net(inputs)
-        full_batch_hash = torch.cat((full_batch_hash, hash.data), 0)
-        full_batch_label = torch.cat((full_batch_label, targets.data), 0)
-        full_batch_feature = torch.cat((full_batch_feature, feature.data), 0)
-    return torch.round(full_batch_hash), full_batch_label, full_batch_feature
 
 def EuclideanDistance(vec1,vec2):
     dist = np.sqrt(np.sum(np.square(vec1 - vec2)))
@@ -104,9 +52,11 @@ def query(trn_binary, trn_feature, tst_binary, tst_feature, HAMMINGDIS, QUERYNUM
     query_times = tst_binary.shape[0]
     candinum=0
     total_time_start = time.time()
+    print(query_times)
     for i in range(query_times):
         query_binary = tst_binary[i,:]
-        query_result = np.count_nonzero(query_binary != trn_binary, axis=1)    #don't need to divide binary length
+        query_result = np.count_nonzero(query_binary != trn_binary, axis=1)
+        # print(query_result)#don't need to divide binary length
         sort_indices = np.argsort(query_result)
         candidate = []
         for j in sort_indices:
@@ -116,13 +66,15 @@ def query(trn_binary, trn_feature, tst_binary, tst_feature, HAMMINGDIS, QUERYNUM
                 break
         candidate.sort(key=takeSecond)
         num=min(QUERYNUM,len(candidate))
-        resultfd.write(query_name[i],':')
+        # resultfd.write(query_name[i],':')
+        print('%s:' % (query_name[i]), file = resultfd)
         for k in range(num):
-            resultfd.write(db_name[candidate[k][0]],',')
+            resultfd.write(db_name[candidate[k][0]])
+            if not k == num - 1:
+                resultfd.write(', ')
         resultfd.write("\n")
-    print('Hamming Dist: ',HAMMINGDIS)
-    print('Average candidate num: ',candinum)
-    print('total query time = ', time.time() - total_time_start)
+        # print('Hamming Dist: ',HAMMINGDIS)
+        # print('Average candidate num: ',len(candidate))
 
 def precision(trn_binary, trn_label, trn_feature, tst_binary, tst_label, tst_feature, HAMMINGDIS, QUERYNUM):
     trn_binary = trn_binary.cpu().numpy()
