@@ -83,7 +83,7 @@ def binary_output(dataloader):
         if use_cuda:
             inputs, targets = inputs.cuda(), targets.cuda()
         inputs, targets = Variable(inputs, volatile=True), Variable(targets)
-        outputs, _ = net(inputs)
+        outputs, _ ,_0= net(inputs)
         full_batch_output = torch.cat((full_batch_output, outputs.data), 0)
         full_batch_label = torch.cat((full_batch_label, targets.data), 0)
     return torch.round(full_batch_output), full_batch_label
@@ -148,16 +148,16 @@ if __name__ == '__main__':
     tst_binary = np.asarray(test_binary, np.int32)
     tst_label = test_label.cpu().numpy()
 
-    precision(train_binary, train_label, test_binary, test_label)
-    # num=888
-    # ans=single_query(tst_binary[num],tst_label[num],train_binary,train_label)
-    # test_fn,label=testset.imgs[num]
-    # img=Image.open('./data/image/'+test_fn).convert('RGB')
-    # plt.subplot(4,4,1)
-    # plt.imshow(img)
-    # for i in range(len(ans)):
-    #     fn,label=trainset.imgs[ans[i]]
-    #     img=Image.open('./data/image/'+fn).convert('RGB')
-    #     plt.subplot(4,4,2+i)
-    #     plt.imshow(img)
-    # plt.show()
+    # precision(train_binary, train_label, test_binary, test_label)
+    num=0
+    ans=single_query(tst_binary[num],tst_label[num],train_binary,train_label)
+    test_fn,label=testset.imgs[num]
+    img=Image.open('./data/image/'+test_fn).convert('RGB')
+    plt.subplot(4,4,1)
+    plt.imshow(img)
+    for i in range(len(ans)):
+        fn,label=trainset.imgs[ans[i]]
+        img=Image.open('./data/image/'+fn).convert('RGB')
+        plt.subplot(4,4,2+i)
+        plt.imshow(img)
+    plt.show()

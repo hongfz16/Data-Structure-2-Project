@@ -18,6 +18,6 @@ class AlexNetPlusLatent(nn.Module):
         x = x.view(x.size(0), 256 * 6 * 6)
         x = self.remain(x)
         feature = self.Linear1(x)
-        hash = self.relu(feature)
+        hash = self.sigmoid(feature)
         result = self.Linear2(hash)
         return hash, result, feature
