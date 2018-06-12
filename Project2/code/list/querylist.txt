@@ -1998,4 +1998,3 @@
 9887.jpg
 9934.jpg
 9982.jpg
-list.txt
