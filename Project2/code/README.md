@@ -1,6 +1,6 @@
-#DeepHash Based Image Retrieval
+# DeepHash Based Image Retrieval
 
-##Introduction
+## Introduction
 
 本项目通过深度哈希值的方法来实现快速图片检索，大致流程为
 
@@ -55,7 +55,7 @@
 
 ## 对应源文件介绍
 
-###MyDataset.py
+### MyDataset.py
 
 定义了数据集类，该类在其他文件中被调用，用于将图片转换为数据集。
 
@@ -74,6 +74,7 @@ python mytrain.py
 使用时需设置包含训练图片集的图片名列表的txt文件路径和包含测试图片集的图片名列表的txt文件路径，其中包含图片列表的txt文件包含若干行，每行包括一张图片的图片名和该图片的类别，两者用空格隔开，如：
 
 > n01613177_1751.JPEG n01613177
+>
 > n01613177_307.JPEG n01613177
 >
 > ……
