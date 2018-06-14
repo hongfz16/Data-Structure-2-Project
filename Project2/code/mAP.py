@@ -1,8 +1,9 @@
+#evaluate the precision of trained net using train and test set
+
 import os
 import argparse
 
 import numpy as np
-# from scipy.spatial.distance import hamming, cdist
 from net import AlexNetPlusLatent
 
 from timeit import time
@@ -36,17 +37,18 @@ transform_test = transforms.Compose(
     [transforms.CenterCrop(227),
      transforms.ToTensor(),
      transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
-trainset=MyDataset(txt=root+'trainlist.txt',transform=transform_train)
+
+trainset = MyDataset(txt=root+'trainlist.txt',transform=transform_train)
 testset = MyDataset(txt=root+'testlist.txt',transform=transform_test)
 
-def load_local_data():
 
+def load_local_data():
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
                                               shuffle=False, num_workers=2)
-
     testloader = torch.utils.data.DataLoader(testset, batch_size=100,
                                              shuffle=False, num_workers=2)
     return trainloader, testloader
+
 
 def load_data():
     transform_train = transforms.Compose(
@@ -59,19 +61,19 @@ def load_data():
          transforms.CenterCrop(227),
          transforms.ToTensor(),
          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
-    trainset = MyDataset(txt='H:\python\cvpr\pytorch_deephash\data\image\\trainlist.txt', transform=transform_train)
+    trainset = MyDataset(txt='./list/trainlist.txt', transform=transform_train)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=100,
                                               shuffle=False, num_workers=2)
 
-    testset = MyDataset(txt='H:\python\cvpr\pytorch_deephash\data\image\\testlist.txt', transform=transform_test)
+    testset = MyDataset(txt='./list/testlist.txt', transform=transform_test)
     testloader = torch.utils.data.DataLoader(testset, batch_size=100,
                                              shuffle=False, num_workers=2)
     return trainloader, testloader
 
+
 def binary_output(dataloader):
     net = AlexNetPlusLatent(args.bits)
-    #net.load_state_dict(torch.load('./model/%d' %args.pretrained))
-    net.load_state_dict(torch.load('G:\model\86.7'))
+    net.load_state_dict(torch.load('./model/86.7'))
 
     use_cuda = torch.cuda.is_available()
     if use_cuda:
@@ -87,6 +89,7 @@ def binary_output(dataloader):
         full_batch_output = torch.cat((full_batch_output, outputs.data), 0)
         full_batch_label = torch.cat((full_batch_label, targets.data), 0)
     return torch.round(full_batch_output), full_batch_label
+
 
 def precision(trn_binary, trn_label, tst_binary, tst_label):
     trn_binary = trn_binary.cpu().numpy()
@@ -104,8 +107,8 @@ def precision(trn_binary, trn_label, tst_binary, tst_label):
         print('Query ', i+1)
         query_label = tst_label[i]
         query_binary = tst_binary[i,:]
-        query_result = np.count_nonzero(query_binary != trn_binary, axis=1)    #don't need to divide binary length
-        sort_indices = np.argsort(query_result)
+        query_result = np.count_nonzero(query_binary != trn_binary, axis=1)  #hamming distance
+        sort_indices = np.argsort(query_result)  #sort by hamming distance
         print(query_label)
         print(sort_indices[:10])
         buffer_yes= np.equal(query_label, trn_label[sort_indices]).astype(int)
@@ -114,6 +117,7 @@ def precision(trn_binary, trn_label, tst_binary, tst_label):
     map = np.mean(AP)
     print(map)
     print('total query time = ', time.time() - total_time_start)
+
 
 def single_query(query_binary,label,trn_binary,trn_label):
     trn_binary = trn_binary.cpu().numpy()
@@ -148,16 +152,4 @@ if __name__ == '__main__':
     tst_binary = np.asarray(test_binary, np.int32)
     tst_label = test_label.cpu().numpy()
 
-    # precision(train_binary, train_label, test_binary, test_label)
-    num=0
-    ans=single_query(tst_binary[num],tst_label[num],train_binary,train_label)
-    test_fn,label=testset.imgs[num]
-    img=Image.open('./data/image/'+test_fn).convert('RGB')
-    plt.subplot(4,4,1)
-    plt.imshow(img)
-    for i in range(len(ans)):
-        fn,label=trainset.imgs[ans[i]]
-        img=Image.open('./data/image/'+fn).convert('RGB')
-        plt.subplot(4,4,2+i)
-        plt.imshow(img)
-    plt.show()
+    precision(train_binary, train_label, test_binary, test_label) #evaluate by mAP

@@ -1,8 +1,9 @@
+# save the binary hash code and feature gained from net
+
 import os
 import argparse
 
 import numpy as np
-# from scipy.spatial.distance import hamming, cdist
 from net import AlexNetPlusLatent
 
 from timeit import time
@@ -29,15 +30,14 @@ def load_data():
          transforms.CenterCrop(227),
          transforms.ToTensor(),
          transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
-    dbset = MyDataset(txt='H:\python\cvpr\pytorch_deephash\ProjectTestData\ir\ir\list.txt', transform=transform_train)
+    dbset = MyDataset(txt='./list/list.txt', transform=transform_train)
     dbloader = torch.utils.data.DataLoader(dbset, batch_size=1,
                                               shuffle=False, num_workers=2)
-
     return dbloader
 
 def getDatabase(dataloader):
     net = AlexNetPlusLatent(args.bits)
-    net.load_state_dict(torch.load('G:\model\86.7',map_location='cpu'))
+    net.load_state_dict(torch.load('./model/86.7',map_location='cpu')) # load trained model
     use_cuda = torch.cuda.is_available()
     if use_cuda:
         net.cuda()
@@ -49,11 +49,11 @@ def getDatabase(dataloader):
         if use_cuda:
             inputs, targets = inputs.cuda(), targets.cuda()
         inputs, targets = Variable(inputs, volatile=True), Variable(targets)
-        hash,result,feature = net(inputs)
+        hash,result,feature = net(inputs) # hash code, output of the net and feature
         full_batch_hash = torch.cat((full_batch_hash, hash.data), 0)
         full_batch_label = torch.cat((full_batch_label, targets.data), 0)
         full_batch_feature = torch.cat((full_batch_feature, feature.data), 0)
-    return torch.round(full_batch_hash), full_batch_label, full_batch_feature
+    return torch.round(full_batch_hash), full_batch_label, full_batch_feature  # round to get hash code with 0 and 1
 
 if __name__ == '__main__':
 
@@ -64,6 +64,3 @@ if __name__ == '__main__':
         torch.save(db_binary, './query/query_binary')
         torch.save(db_label, './query/query_label')
         torch.save(db_feature, './query/query_feature')
-        # torch.save(db_binary, './database/train_binary')
-        # torch.save(db_label, './database/train_label')
-        # torch.save(db_feature, './database/train_feature')
