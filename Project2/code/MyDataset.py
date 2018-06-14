@@ -3,14 +3,12 @@
 from torchvision import transforms
 from torch.utils.data import Dataset
 from PIL import Image
-root = './query/ProjectTestData/ir/ir'
 
 def default_loader(path):
-    return Image.open(root + path).convert('RGB')
-
+    return Image.open(path).convert('RGB')
 
 class MyDataset(Dataset):
-    def __init__(self, txt, transform = None, target_transform = None,
+    def __init__(self, txt, imagepath, transform = None, target_transform = None,
                  loader = default_loader):
         fh = open(txt, 'r')
         imgs = []
@@ -32,10 +30,11 @@ class MyDataset(Dataset):
         self.target_transform = target_transform
         self.loader = loader
         self.labeldic = labeldic
+        self.imagepath=imagepath
 
     def __getitem__(self, index):
         fn, label = self.imgs[index]
-        img = self.loader(fn)
+        img = self.loader(self.imagepath+fn)
         if self.transform is not None:
             img = self.transform(img)
         return img, label

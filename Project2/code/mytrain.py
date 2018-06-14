@@ -16,7 +16,6 @@ import torch.optim.lr_scheduler
 from MyDataset import MyDataset
 from PIL import Image
 
-root = './data/image/'
 
 parser = argparse.ArgumentParser(description='Deep Hashing')
 parser.add_argument('--lr', type=float, default=0.01, metavar='LR',

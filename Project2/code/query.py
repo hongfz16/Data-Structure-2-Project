@@ -12,17 +12,19 @@ parser.add_argument('--bits', type=int, default=48, metavar='bts',
                     help='binary bits')
 args = parser.parse_args()
 
+dblistname='./data/image/list.txt'
+querylistname='./data/query/list.txt'
 
 # store the image names by index
 def readImgNames():
-    db_list = open("./list/dblist.txt",'r')
+    db_list = open(dblistname,'r')
     db_name = []
     for line in db_list:
         line = line.strip('\n')
         line = line.rstrip()
         words = line.split()
         db_name.append(words[0])
-    query_list = open("./list/querylist.txt",'r')
+    query_list = open(querylistname,'r')
     query_name = []
     for line in query_list:
         line = line.strip('\n')
@@ -53,7 +55,7 @@ def query(trn_binary, trn_feature, tst_binary, tst_feature, HAMMINGDIS, QUERYNUM
     tst_binary = np.asarray(tst_binary, np.int32)
     tst_feature = tst_feature.cpu().numpy()
     query_times = tst_binary.shape[0]
-    print(query_times)
+    # print(query_times)
     for i in range(query_times):
         query_binary = tst_binary[i,:]
         query_result = np.count_nonzero(query_binary != trn_binary, axis=1)
@@ -79,6 +81,6 @@ def query(trn_binary, trn_feature, tst_binary, tst_feature, HAMMINGDIS, QUERYNUM
 if __name__ == '__main__':
         db_binary = torch.load('./database/db_binary')
         db_feature = torch.load('./database/db_feature')
-        query_binary = torch.load("./query/query_binary")
-        query_feature = torch.load("./query/query_feature")
+        query_binary = torch.load("./database/query_binary")
+        query_feature = torch.load("./database/query_feature")
         query(db_binary,db_feature,query_binary,query_feature,20,10)  # Hamming dis <= 20, retrieve top 10 images
