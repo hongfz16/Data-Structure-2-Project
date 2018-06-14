@@ -108,3 +108,6 @@ python mytrain.py
 用于展示查询结果。
 
 如果需要制定某个特定的图片进行查询，需要将`main`函数中的`num`变量赋值为某一制定序号
+
+## Reference
+[flyingpot/pytorch_deephash](https://github.com/flyingpot/pytorch_deephash)
