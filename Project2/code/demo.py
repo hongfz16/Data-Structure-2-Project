@@ -27,49 +27,6 @@ parser.add_argument('--bits', type=int, default=48, metavar='bts',
                     help='binary bits')
 args = parser.parse_args()
 
-root = './list/'
-
-transform_db = transforms.Compose(
-    [transforms.CenterCrop(227),
-     transforms.ToTensor(),
-     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
-transform_query = transforms.Compose(
-    [transforms.CenterCrop(227),
-     transforms.ToTensor(),
-     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))])
-
-dbset = MyDataset(txt=root+'trainlist.txt',transform=transform_db)
-queryset = MyDataset(txt=root+'testlist.txt',transform=transform_query)
-
-
-def load_local_data():
-    dbloader = torch.utils.data.DataLoader(dbset, batch_size=100,
-                                              shuffle=False, num_workers=2)
-    queryloader = torch.utils.data.DataLoader(queryset, batch_size=100,
-                                             shuffle=False, num_workers=2)
-    return dbloader, queryloader
-
-  
-def binary_output(dataloader):
-    net = AlexNetPlusLatent(args.bits)
-    net.load_state_dict(torch.load('./model/86.7'))
-
-    use_cuda = torch.cuda.is_available()
-    if use_cuda:
-        net.cuda()
-    full_batch_output = torch.cuda.FloatTensor()
-    full_batch_label = torch.cuda.LongTensor()
-    net.eval()
-    for batch_idx, (inputs, targets) in enumerate(dataloader):
-        if use_cuda:
-            inputs, targets = inputs.cuda(), targets.cuda()
-        inputs, targets = Variable(inputs, volatile=True), Variable(targets)
-        outputs, _, _0 = net(inputs)
-        full_batch_output = torch.cat((full_batch_output, outputs.data), 0)
-        full_batch_label = torch.cat((full_batch_label, targets.data), 0)
-    return torch.round(full_batch_output), full_batch_label
-
-
 def precision(db_binary, db_label, qry_binary, qry_label):
     db_binary = db_binary.cpu().numpy()
     db_binary = np.asarray(db_binary, np.int32)
@@ -109,23 +66,12 @@ def single_query(query_binary,label,db_binary,db_label):
     return sort_indices[:10]
 
 if __name__ == '__main__':
-    if os.path.exists('./result/db_binary') and os.path.exists('./result/db_label') and \
-        os.path.exists('./result/query_binary') and os.path.exists('./result/query_label') and args.pretrained == 0:
-        db_binary = torch.load('./result/db_binary')
-        db_label = torch.load('./result/db_label')
-        query_binary = torch.load('./result/query_binary')
-        query_label = torch.load('./result/query_label')
-
-    else:
-        dbloader, queryloader = load_local_data()
-        db_binary, db_label = binary_output(dbloader)
-        query_binary, query_label = binary_output(queryloader)
-        if not os.path.isdir('result'):
-            os.mkdir('result')
-        torch.save(db_binary, './result/db_binary')
-        torch.save(db_label, './result/db_label')
-        torch.save(query_binary, './result/qry_binary')
-        torch.save(query_label, './result/qry_label')
+    os.path.exists('./result/db_binary') and os.path.exists('./result/db_label') and \
+      os.path.exists('./result/query_binary') and os.path.exists('./result/query_label') and args.pretrained == 0:
+    db_binary = torch.load('./result/db_binary')
+    db_label = torch.load('./result/db_label')
+    query_binary = torch.load('./result/query_binary')
+    query_label = torch.load('./result/query_label')
 
     qry_binary = query_binary.cpu().numpy()
     qry_binary = np.asarray(query_binary, np.int32)
