@@ -1,3 +1,5 @@
+# fine-tuning on our data set
+
 import os
 import shutil
 import argparse
@@ -11,7 +13,7 @@ from torchvision import datasets, models, transforms
 from torch.autograd import Variable
 import torch.optim.lr_scheduler
 
-from MyDataset import  MyDataset
+from MyDataset import MyDataset
 from PIL import Image
 
 root = './data/image/'
@@ -52,7 +54,7 @@ testset = MyDataset(txt = './data/image/testlist.txt', transform = transform_tra
 testloader = torch.utils.data.DataLoader(testset, batch_size=100,
                                          shuffle=True, num_workers=2)
 
-net = AlexNetPlusLatent(args.bits)
+net = AlexNetPlusLatent(args.bits)  # our net based on AlexNet
 
 use_cuda = torch.cuda.is_available()
 
@@ -65,6 +67,7 @@ optimizer4nn = torch.optim.SGD(net.parameters(), lr=args.lr, momentum=args.momen
 
 scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer4nn, milestones=[64], gamma=0.1)
 
+
 def train(epoch):
     print('\nEpoch: %d' % epoch)
     net.train()
@@ -72,34 +75,34 @@ def train(epoch):
     correct = 0
     total = 0
     for batch_idx, (inputs, targets) in enumerate(trainloader):
-        # print(inputs, targets)
         if use_cuda:
             inputs, targets = inputs.cuda(), targets.cuda()
         inputs, targets = Variable(inputs), Variable(targets)
         _, outputs = net(inputs)
-        loss = softmaxloss(outputs, targets)
+        loss = softmaxloss(outputs, targets)  # loss function
         optimizer4nn.zero_grad()
 
-        loss.backward()
+        loss.backward()  # back propagation
 
         optimizer4nn.step()
 
         train_loss += softmaxloss(outputs, targets).item()
-        _, predicted = torch.max(outputs.data, 1)
+        _, predicted = torch.max(outputs.data, 1)  # output label
         total += targets.size(0)
         correct += predicted.eq(targets.data).cpu().sum()
 
         print(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
             % (train_loss/(batch_idx+1), 100*int(correct)/int(total), correct, total))
+
     return train_loss/(batch_idx+1)
 
-def test():
+
+def test():  # decide whether to continue training or to finish
     net.eval()
     test_loss = 0
     correct = 0
     total = 0
     for batch_idx, (inputs, targets) in enumerate(testloader):
-        # print(inputs, targets)
         if use_cuda:
             inputs, targets = inputs.cuda(), targets.cuda()
         inputs, targets = Variable(inputs), Variable(targets)
@@ -112,12 +115,16 @@ def test():
 
         print(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
             % (test_loss/(batch_idx+1), 100*int(correct)/int(total), correct, total))
-    acc = 100*int(correct) / int(total)
-    if epoch == args.epoch:
+
+    acc = 100*int(correct) / int(total)  # accuracy
+
+    if epoch == args.epoch:  # finish training
         print('Saving')
         if not os.path.isdir('{}'.format(args.path)):
             os.mkdir('{}'.format(args.path))
-        torch.save(net.state_dict(), './{}/{}'.format(args.path, acc))
+        torch.save(net.state_dict(), './{}/{}'.format(args.path, acc))  # save the model
+
+
 if __name__ == '__main__':
     if args.pretrained:
         net.load_state_dict(torch.load('./{}/{}'.format(args.path, args.pretrained)))
