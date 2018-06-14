@@ -8,7 +8,7 @@ import os
 parser = argparse.ArgumentParser(description='Deep Hashing evaluate mAP')
 parser.add_argument('--pretrained', type=int, default=0, metavar='pretrained_model',
                     help='loading pretrained model(default = None)')
-parser.add_argument('--bits', type=int, default=64, metavar='bts',
+parser.add_argument('--bits', type=int, default=48, metavar='bts',
                     help='binary bits')
 args = parser.parse_args()
 
