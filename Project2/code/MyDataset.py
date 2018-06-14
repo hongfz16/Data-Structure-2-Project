@@ -3,10 +3,9 @@
 from torchvision import transforms
 from torch.utils.data import Dataset
 from PIL import Image
-root = './query/ProjectTestData/ir/ir'
 
 
-def default_loader(path):
+def default_loader(path, root=''):
     return Image.open(root + path).convert('RGB')
 
 
@@ -18,10 +17,17 @@ class MyDataset(Dataset):
         labeldic = dict()  # a dictionary, label name -> label index
         lastlabel = ''
         labelnum = 0
+        flag = True
+        self.root = ''
         for line in fh:
             line = line.strip('\n')
             line = line.rstrip()
             words = line.split()
+            if flag:
+                if os.path.exists(words[0]):
+                    self.root = words[0]
+                flag = False
+                continue
             if len(words) > 1:
                 if words[1] != lastlabel:   # a new label
                     lastlabel = words[1]
