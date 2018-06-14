@@ -66,8 +66,6 @@ def single_query(query_binary,label,db_binary,db_label):
     return sort_indices[:10]
 
 if __name__ == '__main__':
-    os.path.exists('./result/db_binary') and os.path.exists('./result/db_label') and \
-      os.path.exists('./result/query_binary') and os.path.exists('./result/query_label') and args.pretrained == 0:
     db_binary = torch.load('./result/db_binary')
     db_label = torch.load('./result/db_label')
     query_binary = torch.load('./result/query_binary')
